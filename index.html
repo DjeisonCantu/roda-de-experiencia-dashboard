@@ -314,9 +314,10 @@
 
   /* Vozes */
   .vozes-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
-  .voz-card{ display:flex; flex-direction:column; gap:12px; }
+  .voz-card{ display:flex; flex-direction:column; gap:10px; }
   .voz-tags{ display:flex; flex-wrap:wrap; gap:6px; }
-  .voz-quote{ font-size:14px; line-height:1.5; color:var(--foreground); flex:1; }
+  .voz-titulo{ font-size:14px; font-weight:500; line-height:1.35; color:var(--foreground); }
+  .voz-quote{ font-size:13px; line-height:1.5; color:var(--muted-foreground); flex:1; }
   .voz-quote::before{ content:"\201C"; }
   .voz-quote::after{ content:"\201D"; }
   .voz-perfil{
@@ -589,36 +590,52 @@ const DATA = {
 
   vozes: [
     { produtos: ['pneustore'], tipo: 'Dor', perfil: 'Pós-venda — Atendimento (Canais Críticos / Reclame Aqui)',
+      titulo: 'Falta rastreio de transportadoras atualizado direto no sistema',
       citacao: 'Vamos supor, ao invés da gente ter que entrar no site da transportadora para que a gente possa ter aquela atualização, já ter algo ali atualizado no sistema.' },
     { produtos: ['pneustore'], tipo: 'Aprendizado', perfil: 'Pós-venda — Atendimento (Canais Críticos / Reclame Aqui)',
+      titulo: 'Não está claro se reclamar no Reclame Aqui já vale como aceite do cliente para novas pesquisas (LGPD)',
       citacao: 'Essa informação eu não tenho muito acesso... eu não sei se a gente tem muito controle sobre isso.' },
     { produtos: ['pneustore'], tipo: 'O que funciona', perfil: 'Performance Digital / Analista Marketing Designer',
+      titulo: 'Builder de LPs é bem mais rápido que o processo anterior via agência terceirizada',
       citacao: 'Eu já desenvolvi 145 LPs [...] a gente desenvolveu em uma hora.' },
     { produtos: ['pneustore'], tipo: 'Dor', perfil: 'Pós-venda — Atendimento (Canais Críticos / Reclame Aqui)',
+      titulo: 'Não existe sinalização automática de urgência no Zendesk para tickets prioritários',
       citacao: 'Botar um sininho no setor, quando a gente clicar assim, a reclamação ficar pitando na cabeça deles, até eles dar um retorno pra gente imediato, seria muito bom.' },
     { produtos: ['pneustore', 'varejo'], tipo: 'Dor', perfil: 'Comercial — Vendedor de loja (GP / Varejo)',
+      titulo: 'Instalação comprada na PneuStore não aparece no painel da loja — cliente precisa recomprar',
       citacao: 'O cliente não vê a opção de comprar a instalação no site… chega aqui e a gente não encontra no painel, aí ele tem que tirar do bolso de novo pra fazer outra compra pra instalar.' },
     { produtos: ['atacado'], tipo: 'Dor', perfil: 'Comercial — Vendedor interno (Frota)',
+      titulo: 'OP abre com pagamento "à distância" por padrão, quando deveria ser "presencial"',
       citacao: 'Ia acontecer de a gente fechar um pedido e depois: eita, tava com à distância. Aí eu tenho que recriar uma nova OP, esperar as aprovações de dezenas de pessoas de novo… não foi uma vez só, foi várias vezes e com vários vendedores.' },
     { produtos: ['atacado'], tipo: 'Dor', perfil: 'Comercial — Vendedor(a) de atacado',
+      titulo: 'Chamado não sincroniza entre dispositivos — abre no celular, não abre no notebook',
       citacao: 'Todo ticket que a gente abre só pode ser visualizado no navegador que você abriu… abri no celular na rua e depois no notebook não tinha como anexar.' },
     { produtos: ['atacado'], tipo: 'Dor', perfil: 'Comercial — Vendedor(a) de atacado',
+      titulo: 'NF lenta é citada pelos clientes como motivo de migração para a concorrência',
       citacao: 'Chegou um cliente na concorrência reclamando que na GP Pneus a demora é muito grande; se tiver diferença de 5, 10 reais por pneu, ele prefere comprar em outro lugar, por conta da demora e dos boletos.' },
     { produtos: ['atacado'], tipo: 'Dor', perfil: 'Comercial — Vendedor interno (Frota)',
+      titulo: 'Lentidão a cada clique na OP, principalmente depois das 11h',
       citacao: 'A gente adiciona produto, seleciona a condição de pagamento, ele vai fazer a varredura de estoque, transportadora, e gira, gira, gira, gira. E a gente fica com labirintite.' },
     { produtos: ['atacado'], tipo: 'Dor', perfil: 'Comercial — Vendedor(a) de atacado',
+      titulo: 'Boleto sem baixa pós-migração bloqueia conta de cliente adimplente',
       citacao: 'Boleto que o cliente pagou e não baixou, 10 dias depois a conta do cliente está bloqueada… é constrangedor cobrar um cliente que pagou. Tem cliente que se recusa a mandar comprovante.' },
     { produtos: ['atacado'], tipo: 'Dor', perfil: 'Comercial — Vendedor(a) de atacado',
+      titulo: 'Sem reserva de estoque na OP — pneu pode sumir no meio da negociação e derrubar a venda',
       citacao: 'A gente lança uma OP e o pneu não sai do estoque, só sai quando fecha ganha… no meio da negociação acaba o pneu e eu perco. Semana retrasada eu perdi 80 mil em venda.' },
     { produtos: ['atacado', 'varejo'], tipo: 'Dor', perfil: 'Comercial — Consultor comercial (B2B e B2Fleet)',
+      titulo: 'Chamado aberto no Vero é respondido no Zendesk, sistema ao qual o vendedor não tem acesso',
       citacao: 'A gente vendedor fica igual cego num tiroteio… a gente abre chamado no Vero e o pessoal responde pelo Zendesk, que vendedor não tem acesso. Tem chamado meu aqui que demora três meses pra responder.' },
     { produtos: ['varejo'], tipo: 'Dor', perfil: 'Comercial — Gerente comercial de filial',
+      titulo: 'Verum trava e fica lento no celular, atrapalhando o uso em campo',
       citacao: 'De vez em quando ele trava muito… é um Samsung, 256… não era pra travar tanto. Ele não é responsivo.' },
     { produtos: ['varejo'], tipo: 'Dor', perfil: 'Comercial — Gerente comercial de filial',
+      titulo: 'Gestor não consegue ver com qual vendedor está um cliente ativo de outra região',
       citacao: 'Eu acesso aqui um cliente e não consigo abrir o histórico dele. Eu sei que ele tá com alguém, mas não sei com quem ele tá.' },
     { produtos: ['varejo'], tipo: 'Dor', perfil: 'Comercial — Vendedora de loja (GP / Varejo)',
+      titulo: 'Lojas GP (varejo) não adotaram o Verum e seguem usando o Conect',
       citacao: 'No treinamento eu não fui participar 100% porque estava com muito fluxo de atendimento… então eu prefiro ir pro Conect, que é o mais fácil pra mim.' },
     { produtos: ['atacado', 'varejo'], tipo: 'Aprendizado', perfil: 'Comercial — Consultor comercial (B2B e B2Fleet)',
+      titulo: 'Vendedores estimam falha em cerca de 8 a cada 10 vendas',
       citacao: 'De cada 10 é 8. Nem que a gente tivesse combinado.' }
   ]
 };
@@ -766,6 +783,7 @@ function renderVozes(produtoKey){
     const tipoTag = el('span', 'badge ' + TONE_BADGE[TIPO_TONE[v.tipo] || 'neutral'], v.tipo);
     tags.appendChild(tipoTag);
     card.appendChild(tags);
+    card.appendChild(el('div', 'voz-titulo', v.titulo));
     card.appendChild(el('div', 'voz-quote', v.citacao));
     card.appendChild(el('div', 'voz-perfil', v.perfil));
     grid.appendChild(card);
