@@ -77,6 +77,8 @@
   .t-caption{ font-size:12px; font-weight:400; margin:0; }
   .w-medium{ font-weight:500; }
   .text-muted{ color:var(--muted-foreground); }
+  .section-caption{ font-size:13px; color:var(--muted-foreground); margin:2px 0 14px; line-height:1.45; }
+  .card-caption{ font-size:12px; color:var(--muted-foreground); margin:2px 0 14px; line-height:1.4; }
 
   /* ---------- LOGIN ---------- */
   #login-screen{
@@ -224,7 +226,7 @@
     border-radius:var(--radius-lg);
     padding:3px;
     gap:2px;
-    margin-bottom:24px;
+    margin-bottom:16px;
     flex-wrap:wrap;
   }
   .segmented button{
@@ -247,6 +249,8 @@
     box-shadow:var(--ring-elevation);
   }
 
+  .overlap-note{ font-size:12px; color:var(--muted-foreground); margin:0 0 24px; }
+
   /* Card — DESIGN.md → Card (rounded-xl, ring-1 ring-foreground/10, sem shadow) */
   .card{
     background:var(--card);
@@ -255,23 +259,50 @@
     box-shadow:var(--ring-elevation);
     padding:16px;
   }
-  .card-header{ margin-bottom:16px; }
+  .card-header{ margin-bottom:4px; display:flex; align-items:center; gap:6px; }
   .card-title{ font-size:14px; font-weight:500; color:var(--secondary-foreground); }
+
+  /* fade de conteúdo ao trocar de produto */
+  .fade-target{ transition:opacity .18s ease; }
+  .fade-target.fading{ opacity:0; }
+
+  /* ícone "?" de micro-definição */
+  .info-dot{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:14px; height:14px; border-radius:50%;
+    background:var(--muted); color:var(--muted-foreground);
+    font-size:10px; font-weight:600; cursor:help;
+    flex:0 0 auto; user-select:none;
+  }
+
+  /* Tooltip flutuante — usado em toda barra/segmento/célula com dado real */
+  #tt{
+    position:fixed; z-index:1000; pointer-events:none;
+    background:var(--foreground); color:var(--background);
+    padding:8px 10px; border-radius:var(--radius-md);
+    font-size:12px; line-height:1.45; max-width:260px;
+    box-shadow:0 4px 16px rgba(0,0,0,0.18);
+    opacity:0; transition:opacity .1s ease;
+  }
+  #tt.show{ opacity:1; }
+  #tt b{ font-weight:600; }
+  #tt .tt-def{ display:block; margin-top:4px; color:oklch(0.85 0 0); }
 
   /* Stat — DESIGN.md → Stat (label small muted / value heading3 / caption small muted) */
   .kpi-grid{
     display:grid;
     grid-template-columns:repeat(4,1fr);
     gap:14px;
-    margin-bottom:28px;
+    margin-bottom:8px;
   }
   .stat{ display:flex; flex-direction:column; gap:6px; }
+  .stat .stat-label-row{ display:flex; align-items:center; gap:5px; }
   .stat .stat-label{ font-size:14px; color:var(--muted-foreground); }
-  .stat .stat-value{ font-size:18px; font-weight:600; }
+  .stat .stat-value{ font-size:18px; font-weight:600; font-variant-numeric:tabular-nums; }
   .stat .stat-caption{ font-size:14px; color:var(--muted-foreground); }
 
   section.block{ margin-bottom:32px; }
-  section.block > h2{ margin:0 0 14px; }
+  section.block > h2{ margin:0 0 4px; }
   .card-grid{
     display:grid;
     grid-template-columns:repeat(2,1fr);
@@ -281,8 +312,11 @@
   /* Bars — elemento genérico do dashboard, sem componente correspondente no DS;
      usa os tokens de radius/cor do sistema (chart-1..5 pra categorias neutras,
      tons success/error/warning/info pra Tipo/Impacto, que carregam semântica real) */
-  .bar-row{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .bar-row{ display:flex; align-items:center; gap:10px; margin-bottom:10px; border-radius:var(--radius-sm); }
   .bar-row:last-child{ margin-bottom:0; }
+  .bar-row.clickable{ cursor:pointer; }
+  .bar-row.clickable:hover .bar-label{ color:var(--primary); }
+  .bar-row.is-active .bar-label{ color:var(--primary); font-weight:600; }
   .bar-label{
     width:130px; flex:0 0 130px;
     font-size:13px; color:var(--foreground);
@@ -312,7 +346,70 @@
 
   .empty-note{ font-size:13px; color:var(--muted-foreground); font-style:italic; padding:12px 0; }
 
+  /* Donut (Tipo / Camada) */
+  .donut-block{ display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+  .donut-svg{ flex:0 0 auto; }
+  .donut-svg circle{ cursor:pointer; transition:opacity .15s ease; }
+  .donut-svg circle:hover{ opacity:0.8; }
+  .donut-center-value{ font-size:20px; font-weight:600; }
+  .donut-center-label{ font-size:10px; color:var(--muted-foreground); }
+  .donut-legend{ flex:1; min-width:140px; display:flex; flex-direction:column; gap:8px; }
+  .donut-legend-item{ display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer; border-radius:var(--radius-sm); padding:2px 4px; margin:-2px -4px; }
+  .donut-legend-item:hover{ background:var(--muted); }
+  .donut-legend-item.is-active{ font-weight:600; }
+  .donut-legend-dot{ width:10px; height:10px; border-radius:50%; flex:0 0 auto; }
+  .donut-legend-label{ flex:1; }
+  .donut-legend-value{ font-variant-numeric:tabular-nums; color:var(--muted-foreground); font-size:12px; }
+
+  /* Matriz Impacto x Força */
+  .matrix-wrap{ overflow-x:auto; }
+  .matrix{ border-collapse:separate; border-spacing:4px; font-size:12px; min-width:520px; }
+  .matrix th{ font-weight:500; color:var(--muted-foreground); font-size:11px; padding:4px 6px; text-align:center; }
+  .matrix th.row-h{ text-align:right; }
+  .matrix td{
+    width:56px; height:40px; text-align:center; vertical-align:middle;
+    border-radius:var(--radius-sm); cursor:pointer; font-weight:600;
+    color:var(--foreground); position:relative;
+  }
+  .matrix td:hover{ outline:2px solid var(--primary); outline-offset:-2px; }
+  .matrix td.risk{ box-shadow:inset 0 0 0 2px var(--error-700); }
+  .matrix td.zero{ cursor:default; color:var(--muted-foreground); font-weight:400; }
+  .matrix td.zero:hover{ outline:none; }
+  .matrix-legend{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; margin-top:12px; font-size:12px; color:var(--muted-foreground); }
+  .matrix-legend .sw{ display:inline-flex; align-items:center; gap:6px; }
+  .matrix-legend .box{ width:12px; height:12px; border-radius:3px; display:inline-block; }
+
+  /* Cobertura lado a lado */
+  .coverage-compare{ display:flex; flex-direction:column; gap:14px; }
+  .coverage-row{ display:flex; flex-direction:column; gap:4px; }
+  .coverage-row-head{ display:flex; justify-content:space-between; font-size:13px; font-weight:500; }
+  .coverage-bars{ display:flex; flex-direction:column; gap:4px; }
+  .coverage-bar-line{ display:flex; align-items:center; gap:8px; }
+  .coverage-bar-tag{ width:78px; flex:0 0 78px; font-size:11px; color:var(--muted-foreground); }
+  .coverage-bar-track{ flex:1; height:14px; background:var(--muted); border-radius:var(--radius-sm); overflow:hidden; }
+  .coverage-bar-fill{ height:100%; border-radius:var(--radius-sm); display:flex; align-items:center; }
+  .coverage-bar-pct{ font-size:11px; font-weight:600; width:40px; text-align:right; }
+
   /* Vozes */
+  .vozes-toolbar{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+  .filter-tag{
+    display:inline-flex; align-items:center; gap:6px;
+    height:26px; padding:0 12px; border-radius:var(--radius-lg);
+    font-size:12px; font-weight:500; cursor:pointer;
+    background:var(--muted); color:var(--secondary-foreground); border:none; font-family:inherit;
+  }
+  .filter-tag.is-active{ background:var(--primary); color:var(--primary-foreground); }
+  .active-filter-chip{
+    display:inline-flex; align-items:center; gap:8px;
+    height:28px; padding:0 6px 0 12px; border-radius:var(--radius-lg);
+    background:var(--info-100); color:var(--info-700); font-size:12px; font-weight:500;
+    margin-bottom:14px;
+  }
+  .active-filter-chip button{
+    border:none; background:rgba(0,0,0,0.08); color:inherit; cursor:pointer;
+    width:18px; height:18px; border-radius:50%; font-size:12px; line-height:1;
+    display:flex; align-items:center; justify-content:center;
+  }
   .vozes-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
   .voz-card{ display:flex; flex-direction:column; gap:10px; }
   .voz-tags{ display:flex; flex-wrap:wrap; gap:6px; }
@@ -320,11 +417,20 @@
   .voz-quote{ font-size:13px; line-height:1.5; color:var(--muted-foreground); flex:1; }
   .voz-quote::before{ content:"\201C"; }
   .voz-quote::after{ content:"\201D"; }
+  .voz-quote.no-quote{ font-style:italic; }
+  .voz-quote.no-quote::before, .voz-quote.no-quote::after{ content:""; }
   .voz-perfil{
     font-size:12px; color:var(--muted-foreground);
     border-top:1px solid var(--border);
     padding-top:10px;
   }
+  .ver-mais-wrap{ display:flex; justify-content:center; margin-top:16px; }
+  .ver-mais-btn{
+    height:32px; padding:0 18px; border-radius:var(--radius-lg);
+    border:1px solid var(--border); background:var(--card); color:var(--foreground);
+    font-size:13px; font-weight:500; cursor:pointer; font-family:inherit;
+  }
+  .ver-mais-btn:hover{ background:var(--muted); }
 
   footer.foot{
     margin-top:40px;
@@ -339,12 +445,18 @@
     .kpi-grid{ grid-template-columns:repeat(2,1fr); }
     .card-grid{ grid-template-columns:1fr; }
     .vozes-grid{ grid-template-columns:1fr 1fr; }
+    .donut-block{ flex-direction:column; align-items:flex-start; }
   }
   @media (max-width:560px){
     .kpi-grid{ grid-template-columns:1fr 1fr; }
     .vozes-grid{ grid-template-columns:1fr; }
     .bar-label{ width:96px; flex-basis:96px; font-size:12px; }
-    header.chrome{ padding:0 16px; }
+    header.chrome{ padding:0 16px; height:auto; min-height:56px; }
+    header.chrome #updated-label{ display:none; }
+    header.chrome .brand span{ display:none; }
+    header.chrome .brand .divider{ display:none; }
+    header.chrome .brand svg{ height:20px; }
+    .coverage-bar-tag{ width:60px; flex-basis:60px; }
   }
 </style>
 </head>
@@ -416,42 +528,100 @@
     </div>
 
     <div class="segmented" id="segmented"></div>
+    <p class="overlap-note">Um achado ou contato pode pertencer a mais de um produto — contagens por produto podem somar mais que o total de "Todos". Detalhe completo no rodapé.</p>
 
-    <div class="kpi-grid" id="kpi-grid"></div>
+    <div class="kpi-grid fade-target" id="kpi-grid"></div>
 
     <section class="block">
       <h2 class="t-heading2">Achados</h2>
-      <div class="card-grid">
-        <div class="card"><div class="card-header"><span class="card-title">Por tipo</span></div><div id="chart-tipo"></div></div>
-        <div class="card"><div class="card-header"><span class="card-title">Por força da evidência</span></div><div id="chart-forca"></div></div>
-        <div class="card"><div class="card-header"><span class="card-title">Por impacto</span></div><div id="chart-impacto"></div></div>
-        <div class="card"><div class="card-header"><span class="card-title">Por status</span></div><div id="chart-status"></div></div>
+      <p class="section-caption">Tudo que a pesquisa registrou na base Achados, olhado de quatro ângulos.</p>
+      <div class="card-grid fade-target" id="achados-cards">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Por tipo</span></div>
+          <p class="card-caption">Como os achados se dividem entre Dor, Oportunidade, Aprendizado e O que funciona. Clique numa fatia para ver os achados na seção Vozes.</p>
+          <div id="chart-tipo"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Por força da evidência</span></div>
+          <p class="card-caption">Quão sólida é a base de cada achado, do mais forte ao mais fraco. Clique numa barra para filtrar.</p>
+          <div id="chart-forca"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Por impacto</span></div>
+          <p class="card-caption">Tamanho do problema ou oportunidade percebido. Clique numa barra para filtrar.</p>
+          <div id="chart-impacto"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Por status</span></div>
+          <p class="card-caption">Onde cada achado está na curadoria, de recém-registrado a levado à decisão. Clique numa barra para filtrar.</p>
+          <div id="chart-status"></div>
+        </div>
       </div>
       <div class="callout callout-info" id="callout-achados"></div>
+
+      <div class="card fade-target" id="matrix-card" style="margin-top:16px;">
+        <div class="card-header">
+          <span class="card-title">Matriz de priorização — Impacto × Força da evidência</span>
+        </div>
+        <p class="card-caption">Onde reforçar evidência antes de decidir: achados de Alto impacto sustentados só por Relato único ou Sem evidência (contorno vermelho) são o maior risco de decisão sobre base frágil. Clique numa célula para ver a lista.</p>
+        <div class="matrix-wrap"><div id="matrix"></div></div>
+      </div>
     </section>
 
     <section class="block">
       <h2 class="t-heading2">Cobertura</h2>
-      <div class="card-grid">
-        <div class="card"><div class="card-header"><span class="card-title">Contatos por camada</span></div><div id="chart-camada"></div></div>
-        <div class="card"><div class="card-header"><span class="card-title">Papel na pesquisa</span></div><div id="chart-usuarios"></div></div>
+      <p class="section-caption">Quem a pesquisa já ouviu, na base Contatos.</p>
+      <div class="card-grid fade-target" id="cobertura-cards">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Contatos por camada</span></div>
+          <p class="card-caption">Em que nível hierárquico está cada contato mapeado. Passe o mouse para ver a definição de cada camada.</p>
+          <div id="chart-camada"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Papel na pesquisa</span></div>
+          <p class="card-caption">Que papel cada contato exerce na pesquisa — de quem usa o sistema a quem só abre a porta de acesso.</p>
+          <div id="chart-papel"></div>
+        </div>
       </div>
       <div class="callout callout-error" id="callout-cobertura"></div>
+
+      <div class="card" style="margin-top:16px;">
+        <div class="card-header"><span class="card-title">Operacional vs. Gerência, lado a lado</span></div>
+        <p class="card-caption">% dos contatos de cada produto que são Operacional (usa o sistema) vs. Gerência (autoriza acesso) — sempre os três produtos juntos, independente do filtro acima, pra deixar o buraco do Varejo óbvio.</p>
+        <div id="coverage-compare"></div>
+      </div>
     </section>
 
     <section class="block">
       <h2 class="t-heading2">Conversas</h2>
-      <div class="card-grid">
-        <div class="card"><div class="card-header"><span class="card-title">Andamento</span></div><div id="chart-andamento"></div></div>
-        <div class="card"><div class="card-header"><span class="card-title">Origem da pauta</span></div><div id="chart-origem"></div></div>
-        <div class="card"><div class="card-header"><span class="card-title">Modalidade</span></div><div id="chart-modalidade"></div></div>
+      <p class="section-caption">As pesquisas (conversas) registradas na base Pesquisas.</p>
+      <div class="card-grid fade-target" id="conversas-cards">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Andamento</span></div>
+          <p class="card-caption">Estágio da conversa — de convidado a realizado/registrado, sem resposta ou cancelado.</p>
+          <div id="chart-andamento"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Origem da pauta</span></div>
+          <p class="card-caption">De onde veio o gatilho da conversa (kick-off, pós-release etc.).</p>
+          <div id="chart-origem"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Modalidade</span></div>
+          <p class="card-caption">Como a conversa aconteceu — remota, presencial, shadowing ou em grupo.</p>
+          <div id="chart-modalidade"></div>
+        </div>
       </div>
       <div class="callout callout-neutral" id="callout-conversas"></div>
     </section>
 
     <section class="block">
-      <h2 class="t-heading2">Personas</h2>
-      <div class="card-grid">
+      <div class="card-header">
+        <h2 class="t-heading2" style="margin:0;">Personas</h2>
+        <span class="info-dot" data-tip-def="persona">?</span>
+      </div>
+      <p class="section-caption">Perfis sintéticos consolidados a partir dos achados — status de maturidade de cada um.</p>
+      <div class="card-grid fade-target" id="personas-cards">
         <div class="card"><div class="card-header"><span class="card-title">Status</span></div><div id="chart-personas"></div></div>
         <div class="card">
           <div class="card-header"><span class="card-title">Nota de maturidade</span></div>
@@ -462,8 +632,11 @@
 
     <section class="block">
       <h2 class="t-heading2">Vozes dos Parceiros</h2>
-      <p class="t-small text-muted" style="margin:-6px 0 16px;">Citações literais de achados de Alto impacto. Perfil, nunca nome.</p>
+      <p class="section-caption">Citações literais dos achados de Alto impacto. Perfil, nunca nome. Clique em qualquer barra ou célula acima para ver os achados daquele recorte aqui.</p>
+      <div class="vozes-toolbar" id="vozes-toolbar"></div>
+      <div id="active-filter-area"></div>
       <div class="vozes-grid" id="vozes-grid"></div>
+      <div class="ver-mais-wrap" id="ver-mais-wrap"></div>
     </section>
 
     <footer class="foot">
@@ -471,6 +644,8 @@
     </footer>
   </div>
 </div>
+
+<div id="tt"></div>
 
 <script>
 /* ======================================================================
@@ -481,12 +656,62 @@
 const AUTH = { user: 'cantu', pass: 'roda2026' };
 
 /* ======================================================================
+   MICRO-DEFINIÇÕES — sentidos fixados pelo time do projeto (não reescrever).
+   Alimentam os tooltips de hover em cada barra/segmento/célula.
+   ====================================================================== */
+const DEFINITIONS = {
+  papel: {
+    'Usuário': 'Usa o sistema no dia a dia',
+    'Porta de acesso': 'Abre caminho até os usuários (ex.: gerente que autoriza)',
+    'Stakeholder': 'Interessado na área/decisão',
+    'Especialista do negócio': 'Domina a regra',
+    'BA': 'Analista de negócio do produto'
+  },
+  forca: {
+    'Dado quantitativo': 'Métrica ou número do sistema sustenta o achado — evidência mais forte',
+    'Caso concreto': 'Um episódio real e detalhado foi relatado',
+    'Relato recorrente': 'Mais de uma pessoa relatou o mesmo padrão',
+    'Relato único': 'Uma pessoa relatou uma vez, sem confirmação de outra fonte',
+    'Sem evidência': 'Hipótese ainda sem relato ou dado que sustente — evidência mais fraca'
+  },
+  status: {
+    'Bruto': 'Registrado, ainda não trabalhado',
+    'Em análise': 'Em avaliação pelo time de UX',
+    'Curado': 'Já foi trabalhado e organizado',
+    'Levado à decisão': 'Já chegou à mesa de decisão',
+    'Descartado': 'Avaliado e não seguiu adiante'
+  },
+  camada: {
+    'Operacional': 'Executa a tarefa no dia a dia',
+    'Coordenação': 'Coordena o time operacional',
+    'Gerência': 'Gerencia a área ou filial',
+    'Diretoria': 'Direção executiva',
+    'Produto': 'Time do sistema (VerumSales/PneuStore)',
+    'A confirmar': 'Camada ainda não confirmada com o contato',
+    'Sem camada': 'Contato sem camada registrada'
+  },
+  impacto: {
+    'Alto': 'Problema grande e/ou muito frequente',
+    'Médio': 'Problema moderado, atrapalha mas tem contorno',
+    'Baixo': 'Problema pequeno ou raro',
+    'Não definido': 'Impacto ainda não classificado'
+  },
+  persona: 'Perfil de referência montado a partir dos achados; serve para consulta e teste, nunca para aprovar decisão.'
+};
+
+/* ======================================================================
    DATA — único bloco que muda quando os dados forem atualizados.
    Gerado a partir das bases do Notion (Contatos, Pesquisas, Achados,
    Personas Sintéticas) do projeto Roda de Experiência.
+
+   achadosIndex: os 135 registros da base Achados (id, achado, tipo, força,
+   impacto, status, produtos, perfil, citação quando existe) — fonte única
+   para os cards de "Vozes dos Parceiros" (via vozesMeta, que só guarda
+   {id, titulo} e busca o resto aqui) e para o drill-down de barras/matriz,
+   que nunca inventa número: tudo aponta pra um id real desta lista.
    ====================================================================== */
 const DATA = {
-  updated: '2026-09-14',
+  updated: '2026-09-15',
 
   todos: {
     label: 'Todos',
@@ -495,11 +720,13 @@ const DATA = {
       porTipo: { 'Dor': 83, 'Oportunidade': 18, 'Aprendizado': 18, 'O que funciona': 16 },
       porForca: { 'Relato recorrente': 55, 'Caso concreto': 52, 'Relato único': 26, 'Sem evidência': 1, 'Dado quantitativo': 1 },
       porImpacto: { 'Médio': 71, 'Alto': 55, 'Baixo': 8, 'Não definido': 1 },
-      porStatus: { 'Bruto': 132, 'Em análise': 2, 'Curado': 1 }
+      porStatus: { 'Bruto': 132, 'Em análise': 2, 'Curado': 1 },
+      matrizImpactoForca: {"Alto": {"Dado quantitativo": 1, "Caso concreto": 34, "Relato recorrente": 18, "Relato único": 2, "Sem evidência": 0}, "Médio": {"Dado quantitativo": 0, "Caso concreto": 18, "Relato recorrente": 36, "Relato único": 16, "Sem evidência": 1}, "Baixo": {"Dado quantitativo": 0, "Caso concreto": 0, "Relato recorrente": 1, "Relato único": 7, "Sem evidência": 0}}
     },
     contatos: {
       total: 234, usuarios: 85,
-      porCamada: { 'Gerência': 130, 'Operacional': 90, 'Coordenação': 6, 'Produto': 3, 'Diretoria': 2, 'A confirmar': 2, 'Sem camada': 1 }
+      porCamada: { 'Gerência': 130, 'Operacional': 90, 'Coordenação': 6, 'Produto': 3, 'Diretoria': 2, 'A confirmar': 2, 'Sem camada': 1 },
+      papelPesquisa: { 'Porta de acesso': 124, 'Usuário': 85, 'Stakeholder': 15, 'Especialista do negócio': 15, 'BA': 3 }
     },
     pesquisas: {
       total: 17,
@@ -520,11 +747,13 @@ const DATA = {
       porTipo: { 'Dor': 19, 'Oportunidade': 5, 'O que funciona': 5, 'Aprendizado': 5 },
       porForca: { 'Relato único': 18, 'Caso concreto': 9, 'Relato recorrente': 5, 'Sem evidência': 1, 'Dado quantitativo': 1 },
       porImpacto: { 'Médio': 17, 'Alto': 11, 'Baixo': 5, 'Não definido': 1 },
-      porStatus: { 'Bruto': 31, 'Em análise': 2, 'Curado': 1 }
+      porStatus: { 'Bruto': 31, 'Em análise': 2, 'Curado': 1 },
+      matrizImpactoForca: {"Alto": {"Dado quantitativo": 1, "Caso concreto": 5, "Relato recorrente": 3, "Relato único": 2, "Sem evidência": 0}, "Médio": {"Dado quantitativo": 0, "Caso concreto": 4, "Relato recorrente": 2, "Relato único": 10, "Sem evidência": 1}, "Baixo": {"Dado quantitativo": 0, "Caso concreto": 0, "Relato recorrente": 0, "Relato único": 5, "Sem evidência": 0}}
     },
     contatos: {
       total: 37, usuarios: 15,
-      porCamada: { 'Operacional': 29, 'Coordenação': 4, 'Gerência': 2, 'Produto': 1, 'Diretoria': 1 }
+      porCamada: { 'Operacional': 29, 'Coordenação': 4, 'Gerência': 2, 'Produto': 1, 'Diretoria': 1 },
+      papelPesquisa: { 'Usuário': 15, 'Especialista do negócio': 15, 'Porta de acesso': 7, 'Stakeholder': 3, 'BA': 1 }
     },
     pesquisas: {
       total: 4,
@@ -545,11 +774,13 @@ const DATA = {
       porTipo: { 'Dor': 51, 'Oportunidade': 13, 'Aprendizado': 9, 'O que funciona': 6 },
       porForca: { 'Relato recorrente': 39, 'Caso concreto': 34, 'Relato único': 6 },
       porImpacto: { 'Médio': 40, 'Alto': 37, 'Baixo': 2 },
-      porStatus: { 'Bruto': 79 }
+      porStatus: { 'Bruto': 79 },
+      matrizImpactoForca: {"Alto": {"Dado quantitativo": 0, "Caso concreto": 25, "Relato recorrente": 12, "Relato único": 0, "Sem evidência": 0}, "Médio": {"Dado quantitativo": 0, "Caso concreto": 9, "Relato recorrente": 26, "Relato único": 5, "Sem evidência": 0}, "Baixo": {"Dado quantitativo": 0, "Caso concreto": 0, "Relato recorrente": 1, "Relato único": 1, "Sem evidência": 0}}
     },
     contatos: {
       total: 87, usuarios: 66,
-      porCamada: { 'Operacional': 58, 'Gerência': 25, 'Coordenação': 2, 'Produto': 1, 'A confirmar': 1 }
+      porCamada: { 'Operacional': 58, 'Gerência': 25, 'Coordenação': 2, 'Produto': 1, 'A confirmar': 1 },
+      papelPesquisa: { 'Usuário': 66, 'Porta de acesso': 16, 'Stakeholder': 3, 'BA': 1 }
     },
     pesquisas: {
       total: 10,
@@ -570,11 +801,13 @@ const DATA = {
       porTipo: { 'Dor': 21, 'O que funciona': 5, 'Aprendizado': 5, 'Oportunidade': 1 },
       porForca: { 'Relato recorrente': 16, 'Caso concreto': 14, 'Relato único': 2 },
       porImpacto: { 'Médio': 17, 'Alto': 14, 'Baixo': 1 },
-      porStatus: { 'Bruto': 32 }
+      porStatus: { 'Bruto': 32 },
+      matrizImpactoForca: {"Alto": {"Dado quantitativo": 0, "Caso concreto": 9, "Relato recorrente": 5, "Relato único": 0, "Sem evidência": 0}, "Médio": {"Dado quantitativo": 0, "Caso concreto": 5, "Relato recorrente": 11, "Relato único": 1, "Sem evidência": 0}, "Baixo": {"Dado quantitativo": 0, "Caso concreto": 0, "Relato recorrente": 0, "Relato único": 1, "Sem evidência": 0}}
     },
     contatos: {
       total: 122, usuarios: 4,
-      porCamada: { 'Gerência': 117, 'Operacional': 3, 'Produto': 1, 'Diretoria': 1 }
+      porCamada: { 'Gerência': 117, 'Operacional': 3, 'Produto': 1, 'Diretoria': 1 },
+      papelPesquisa: { 'Porta de acesso': 116, 'Stakeholder': 8, 'Usuário': 4, 'BA': 1 }
     },
     pesquisas: {
       total: 4,
@@ -588,63 +821,39 @@ const DATA = {
     }
   },
 
-  vozes: [
-    { produtos: ['pneustore'], tipo: 'Dor', perfil: 'Pós-venda — Atendimento (Canais Críticos / Reclame Aqui)',
-      titulo: 'Falta rastreio de transportadoras atualizado direto no sistema',
-      citacao: 'Vamos supor, ao invés da gente ter que entrar no site da transportadora para que a gente possa ter aquela atualização, já ter algo ali atualizado no sistema.' },
-    { produtos: ['pneustore'], tipo: 'Aprendizado', perfil: 'Pós-venda — Atendimento (Canais Críticos / Reclame Aqui)',
-      titulo: 'Não está claro se reclamar no Reclame Aqui já vale como aceite do cliente para novas pesquisas (LGPD)',
-      citacao: 'Essa informação eu não tenho muito acesso... eu não sei se a gente tem muito controle sobre isso.' },
-    { produtos: ['pneustore'], tipo: 'O que funciona', perfil: 'Performance Digital / Analista Marketing Designer',
-      titulo: 'Builder de LPs é bem mais rápido que o processo anterior via agência terceirizada',
-      citacao: 'Eu já desenvolvi 145 LPs [...] a gente desenvolveu em uma hora.' },
-    { produtos: ['pneustore'], tipo: 'Dor', perfil: 'Pós-venda — Atendimento (Canais Críticos / Reclame Aqui)',
-      titulo: 'Não existe sinalização automática de urgência no Zendesk para tickets prioritários',
-      citacao: 'Botar um sininho no setor, quando a gente clicar assim, a reclamação ficar pitando na cabeça deles, até eles dar um retorno pra gente imediato, seria muito bom.' },
-    { produtos: ['pneustore', 'varejo'], tipo: 'Dor', perfil: 'Comercial — Vendedor de loja (GP / Varejo)',
-      titulo: 'Instalação comprada na PneuStore não aparece no painel da loja — cliente precisa recomprar',
-      citacao: 'O cliente não vê a opção de comprar a instalação no site… chega aqui e a gente não encontra no painel, aí ele tem que tirar do bolso de novo pra fazer outra compra pra instalar.' },
-    { produtos: ['atacado'], tipo: 'Dor', perfil: 'Comercial — Vendedor interno (Frota)',
-      titulo: 'OP abre com pagamento "à distância" por padrão, quando deveria ser "presencial"',
-      citacao: 'Ia acontecer de a gente fechar um pedido e depois: eita, tava com à distância. Aí eu tenho que recriar uma nova OP, esperar as aprovações de dezenas de pessoas de novo… não foi uma vez só, foi várias vezes e com vários vendedores.' },
-    { produtos: ['atacado'], tipo: 'Dor', perfil: 'Comercial — Vendedor(a) de atacado',
-      titulo: 'Chamado não sincroniza entre dispositivos — abre no celular, não abre no notebook',
-      citacao: 'Todo ticket que a gente abre só pode ser visualizado no navegador que você abriu… abri no celular na rua e depois no notebook não tinha como anexar.' },
-    { produtos: ['atacado'], tipo: 'Dor', perfil: 'Comercial — Vendedor(a) de atacado',
-      titulo: 'NF lenta é citada pelos clientes como motivo de migração para a concorrência',
-      citacao: 'Chegou um cliente na concorrência reclamando que na GP Pneus a demora é muito grande; se tiver diferença de 5, 10 reais por pneu, ele prefere comprar em outro lugar, por conta da demora e dos boletos.' },
-    { produtos: ['atacado'], tipo: 'Dor', perfil: 'Comercial — Vendedor interno (Frota)',
-      titulo: 'Lentidão a cada clique na OP, principalmente depois das 11h',
-      citacao: 'A gente adiciona produto, seleciona a condição de pagamento, ele vai fazer a varredura de estoque, transportadora, e gira, gira, gira, gira. E a gente fica com labirintite.' },
-    { produtos: ['atacado'], tipo: 'Dor', perfil: 'Comercial — Vendedor(a) de atacado',
-      titulo: 'Boleto sem baixa pós-migração bloqueia conta de cliente adimplente',
-      citacao: 'Boleto que o cliente pagou e não baixou, 10 dias depois a conta do cliente está bloqueada… é constrangedor cobrar um cliente que pagou. Tem cliente que se recusa a mandar comprovante.' },
-    { produtos: ['atacado'], tipo: 'Dor', perfil: 'Comercial — Vendedor(a) de atacado',
-      titulo: 'Sem reserva de estoque na OP — pneu pode sumir no meio da negociação e derrubar a venda',
-      citacao: 'A gente lança uma OP e o pneu não sai do estoque, só sai quando fecha ganha… no meio da negociação acaba o pneu e eu perco. Semana retrasada eu perdi 80 mil em venda.' },
-    { produtos: ['atacado', 'varejo'], tipo: 'Dor', perfil: 'Comercial — Consultor comercial (B2B e B2Fleet)',
-      titulo: 'Chamado aberto no Vero é respondido no Zendesk, sistema ao qual o vendedor não tem acesso',
-      citacao: 'A gente vendedor fica igual cego num tiroteio… a gente abre chamado no Vero e o pessoal responde pelo Zendesk, que vendedor não tem acesso. Tem chamado meu aqui que demora três meses pra responder.' },
-    { produtos: ['varejo'], tipo: 'Dor', perfil: 'Comercial — Gerente comercial de filial',
-      titulo: 'Verum trava e fica lento no celular, atrapalhando o uso em campo',
-      citacao: 'De vez em quando ele trava muito… é um Samsung, 256… não era pra travar tanto. Ele não é responsivo.' },
-    { produtos: ['varejo'], tipo: 'Dor', perfil: 'Comercial — Gerente comercial de filial',
-      titulo: 'Gestor não consegue ver com qual vendedor está um cliente ativo de outra região',
-      citacao: 'Eu acesso aqui um cliente e não consigo abrir o histórico dele. Eu sei que ele tá com alguém, mas não sei com quem ele tá.' },
-    { produtos: ['varejo'], tipo: 'Dor', perfil: 'Comercial — Vendedora de loja (GP / Varejo)',
-      titulo: 'Lojas GP (varejo) não adotaram o Verum e seguem usando o Conect',
-      citacao: 'No treinamento eu não fui participar 100% porque estava com muito fluxo de atendimento… então eu prefiro ir pro Conect, que é o mais fácil pra mim.' },
-    { produtos: ['atacado', 'varejo'], tipo: 'Aprendizado', perfil: 'Comercial — Consultor comercial (B2B e B2Fleet)',
-      titulo: 'Vendedores estimam falha em cerca de 8 a cada 10 vendas',
-      citacao: 'De cada 10 é 8. Nem que a gente tivesse combinado.' }
-  ]
+  /* 16 citações em destaque — só o pointer (id) + título editorial curto.
+     Tudo mais (tipo, produtos, perfil, citação) é lido de achadosIndex pelo id. */
+  vozesMeta: [
+    { id: 97,  titulo: 'Falta rastreio de transportadoras atualizado direto no sistema' },
+    { id: 105, titulo: 'Não está claro se reclamar no Reclame Aqui já vale como aceite do cliente para novas pesquisas (LGPD)' },
+    { id: 91,  titulo: 'Builder de LPs é bem mais rápido que o processo anterior via agência terceirizada' },
+    { id: 101, titulo: 'Não existe sinalização automática de urgência no Zendesk para tickets prioritários' },
+    { id: 63,  titulo: 'Instalação comprada na PneuStore não aparece no painel da loja — cliente precisa recomprar' },
+    { id: 26,  titulo: 'OP abre com pagamento "à distância" por padrão, quando deveria ser "presencial"' },
+    { id: 108, titulo: 'Chamado não sincroniza entre dispositivos — abre no celular, não abre no notebook' },
+    { id: 98,  titulo: 'NF lenta é citada pelos clientes como motivo de migração para a concorrência' },
+    { id: 28,  titulo: 'Lentidão a cada clique na OP, principalmente depois das 11h' },
+    { id: 100, titulo: 'Boleto sem baixa pós-migração bloqueia conta de cliente adimplente' },
+    { id: 94,  titulo: 'Sem reserva de estoque na OP — pneu pode sumir no meio da negociação e derrubar a venda' },
+    { id: 60,  titulo: 'Chamado aberto no Vero é respondido no Zendesk, sistema ao qual o vendedor não tem acesso' },
+    { id: 119, titulo: 'Verum trava e fica lento no celular, atrapalhando o uso em campo' },
+    { id: 113, titulo: 'Gestor não consegue ver com qual vendedor está um cliente ativo de outra região' },
+    { id: 51,  titulo: 'Lojas GP (varejo) não adotaram o Verum e seguem usando o Conect' },
+    { id: 17,  titulo: 'Vendedores estimam falha em cerca de 8 a cada 10 vendas' }
+  ],
+
+  achadosIndex: [{"id": 1, "achado": "Zendesk pede CPF como primeira pergunta e gera evasão no atendimento", "tipo": "Dor", "forca": "Dado quantitativo", "impacto": "Alto", "status": "Curado", "produtos": ["pneustore"], "perfil": "E-commerce / Analista Pré-vendas", "citacao": null}, {"id": 2, "achado": "Cliente evita criar conta para calcular frete e o atendimento simula a jornada manualmente", "tipo": "Dor", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["pneustore"], "perfil": "E-commerce / Analista Pré-vendas", "citacao": null}, {"id": 3, "achado": "Anúncio continua ativo no site mesmo sem estoque, permitindo compra de produto indisponível", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Alto", "status": "Em análise", "produtos": ["pneustore"], "perfil": "E-commerce / Analista Pós-vendas", "citacao": null}, {"id": 4, "achado": "Disparo automático de substituição de estoque oferta medida errada ao cliente", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Alto", "status": "Bruto", "produtos": ["pneustore"], "perfil": "E-commerce / Analista Pós-vendas (ativo)", "citacao": null}, {"id": 5, "achado": "Busca por veículo retorna medida diferente da simulação do atendimento e gera cancelamento", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Alto", "status": "Bruto", "produtos": ["pneustore"], "perfil": "E-commerce / Analista Pós-vendas + Analista Pré-vendas", "citacao": null}, {"id": 6, "achado": "Busca por medida na barra de pesquisa não é otimizada", "tipo": "Dor", "forca": "Relato único", "impacto": "Médio", "status": "Bruto", "produtos": ["pneustore"], "perfil": "E-commerce / Analista Pré-vendas", "citacao": null}, {"id": 7, "achado": "Busca por placa via plataforma Swing tem ~99% de assertividade", "tipo": "O que funciona", "forca": "Relato único", "impacto": null, "status": "Bruto", "produtos": ["pneustore"], "perfil": "E-commerce / Analista Pré-vendas", "citacao": null}, {"id": 8, "achado": "PDP herdada do Hybris é visualmente arcaica e o filtro de medidas não tem busca interna", "tipo": "Dor", "forca": "Relato único", "impacto": "Médio", "status": "Bruto", "produtos": ["pneustore"], "perfil": "E-commerce / Analista de Catálogo", "citacao": null}, {"id": 9, "achado": "Falta uma pontuação de saúde do anúncio para priorizar correções de cadastro", "tipo": "Oportunidade", "forca": "Sem evidência", "impacto": "Médio", "status": "Bruto", "produtos": ["pneustore"], "perfil": "E-commerce / Analista de Catálogo", "citacao": null}, {"id": 10, "achado": "Novas features não chegam ao time de atendimento a tempo", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Médio", "status": "Bruto", "produtos": ["pneustore"], "perfil": "E-commerce / Analista Pré-vendas", "citacao": null}, {"id": 11, "achado": "No sistema anterior o histórico de chamados ficava na conta do cliente (hoje não)", "tipo": "Oportunidade", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado", "varejo"], "perfil": "Comercial — Consultor comercial (B2B e B2Fleet)", "citacao": "No Seiros era na conta do cliente; eu entrava na conta do cliente e sabia tudo que foi tratado daquele cliente. Hoje a gente não tem isso."}, {"id": 12, "achado": "API do backoffice no Zendesk funciona bem e poderia cobrir estoque e OMS", "tipo": "Oportunidade", "forca": "Relato único", "impacto": "Médio", "status": "Bruto", "produtos": ["pneustore"], "perfil": "E-commerce / Analista Pré-vendas", "citacao": null}, {"id": 13, "achado": "Vendedor abre chamados que seriam do assistente/faturamento e perde tempo de venda", "tipo": "Dor", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado", "varejo"], "perfil": "Comercial — Consultor comercial (B2B e B2Fleet)", "citacao": "Depois de 50 minutos, o assistente vem dizer pro vendedor abrir um chamado… coisas que é pra eles abrirem. O vendedor fica abrindo chamado de coisa que não tem relação com a venda."}, {"id": 14, "achado": "Edição de endereço de entrega bloqueada para clientes CPF no Verum Commerce", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Médio", "status": "Em análise", "produtos": ["pneustore"], "perfil": "Ecommerce — Analista de Pré-vendas (PneuStore Varejo)", "citacao": null}, {"id": 15, "achado": "Burocracia gera constrangimento, perda de cliente e imagem negativa no mercado", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado", "varejo"], "perfil": "Comercial — Consultor comercial (B2B e B2Fleet)", "citacao": "Antes da aquisição, em 10 minutos ele tinha a nota fiscal e saía com os pneus; depois da aquisição… ele disse que não compra de nenhum dos dois, de tão desgastante. / O cliente vai e espalha no mercado que lá é burocrático."}, {"id": 16, "achado": "Falta de leitura de cartão por câmera no checkout do site", "tipo": "Oportunidade", "forca": "Relato único", "impacto": "Médio", "status": "Bruto", "produtos": ["pneustore"], "perfil": "Ecommerce — Analista de Pré-vendas (PneuStore Varejo)", "citacao": null}, {"id": 17, "achado": "Vendedores estimam falha em ~8 de cada 10 vendas", "tipo": "Aprendizado", "forca": "Relato recorrente", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado", "varejo"], "perfil": "Comercial — Consultor comercial (B2B e B2Fleet)", "citacao": "De cada 10 é 8. Nem que a gente tivesse combinado. / Eu botei nove; um sai certo, a cada dez."}, {"id": 18, "achado": "Rotina de pré-vendas do Varejo depende de monitoramento manual simultâneo de múltiplos canais", "tipo": "Aprendizado", "forca": "Relato único", "impacto": "Baixo", "status": "Bruto", "produtos": ["pneustore"], "perfil": "Ecommerce — Analista de Pré-vendas (PneuStore Varejo)", "citacao": null}, {"id": 19, "achado": "PIX é usado como estratégia para antecipar o faturamento da nota", "tipo": "Aprendizado", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Consultor comercial (B2B / Revenda)", "citacao": "Pague no Pix que é melhor, porque aí eu já analiso a tua nota; se der algum problema, a gente já sabe antes. Quando é cartão na hora, aí é esperar e contar com a sorte."}, {"id": 20, "achado": "IA do OmniChat funcionando bem é o que define um dia produtivo", "tipo": "O que funciona", "forca": "Relato único", "impacto": "Baixo", "status": "Bruto", "produtos": ["pneustore"], "perfil": "Ecommerce — Analista de Pré-vendas (PneuStore Varejo)", "citacao": null}, {"id": 21, "achado": "Consultor usa o Vero no celular em rota, não só no notebook", "tipo": "Aprendizado", "forca": "Relato único", "impacto": "Médio", "status": "Bruto", "produtos": ["varejo"], "perfil": "Comercial — Consultor comercial (B2Fleet)", "citacao": "Utilizo tanto o notebook como o celular; quando eu não consigo estar no notebook, pelo celular eu passo orçamento, fecho pedidos, consulto preço."}, {"id": 22, "achado": "Transferência de cliente entre bases (regionalização) é manual e trava a venda", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor interno (Frota)", "citacao": "Eu tava com o cliente aqui na minha frente, presencial… a menina da regionalização falou que o cliente estava em negociação. Aí eu disse: cara, o cliente vai ficar aqui na loja esperando três horas? Ela só passou depois que meu gerente ligou pro gerente dela."}, {"id": 23, "achado": "Nomenclatura de produtos inconsistente impede busca padronizada", "tipo": "Dor", "forca": "Relato recorrente", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Antigamente a gente escrevia 295 tração e aparecia tudo; hoje não… parece que várias pessoas cadastram, cada um de uma forma, não existe padrão. O Grip Master às vezes tá como G, como GPR."}, {"id": 24, "achado": "Vendedor cadastra familiar do cliente para emitir nota e driblar a regionalização", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor interno (Frota)", "citacao": "Eu pergunto ao cliente: o senhor tem um filho, uma filha maior, ou esposa, que possa me passar os dados pra eu cadastrar? É só pra tirar a nota, é só pra ganhar tempo."}, {"id": 25, "achado": "Preço sobe da cotação para o pedido", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Às vezes altera a cotação e, quando vai tirar o pedido, o valor muda… pra mais."}, {"id": 26, "achado": "OP abre com pagamento 'à distância' por padrão; deveria ser 'presencial'", "tipo": "Dor", "forca": "Relato recorrente", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor interno (Frota)", "citacao": "Ia acontecer de a gente fechar um pedido e depois: eita, tava com à distância. Aí eu tenho que recriar uma nova OP, esperar as aprovações de dezenas de pessoas de novo… não foi uma vez só, foi várias vezes e com vários vendedores."}, {"id": 27, "achado": "Cotação exibe itens sem estoque", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Se eu colocar em cotação, aparece o pneu que não tem… se ele chegar amanhã, chega com o preço mudado."}, {"id": 28, "achado": "Lentidão a cada clique na OP; piora após as 11h; tela de cadastro ~15s", "tipo": "Dor", "forca": "Relato recorrente", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor interno (Frota)", "citacao": "A gente adiciona produto, seleciona a condição de pagamento, ele vai fazer a varredura de estoque, transportadora, e gira, gira, gira, gira. E a gente fica com labirintite. / A gente abre a tela de cadastro e fica uns 15 segundos esperando ela responder."}, {"id": 29, "achado": "Falta filtro de estoque por região (ver o local primeiro)", "tipo": "Oportunidade", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Se aparecesse só o que tem na nossa casa, ia muito mais rápido; e se a gente quisesse buscar em outras unidades, ia lá e selecionava."}, {"id": 30, "achado": "Sem seleção múltipla para excluir produtos na OP (revenda 200+ itens > 1h)", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor interno (Frota)", "citacao": "Vou excluir um. Gira, gira, gira. Vou excluir outro. Gira, gira. Perdi 20 minutos nisso. Não tem opção de selecionar 12 produtos e excluir os 12 de uma vez… imagina o pessoal da revenda que seleciona 200 produtos."}, {"id": 31, "achado": "Lentidão: nota à vista leva de 40 min a um dia e inviabiliza a meta de 40 clientes/dia", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "À vista demora 40 minutos até uma hora, ou o dia inteiro, e vai sair só no outro dia… e o cliente na tua frente, você não pode fazer nada. / Querem que a gente fale com 40 clientes ao dia, não tem como."}, {"id": 32, "achado": "Remessa demora 20–25 min para o vendedor, mas a ADM vê em ~2 min", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor interno (Frota)", "citacao": "15, 20 minutos pra aparecer a remessa pra gente, mas pra ADM lá embaixo ela consegue ver com 2 minutos… tem caso de 20, 25 minutos e a remessa não aparece pra gente."}, {"id": 33, "achado": "Cadastro inativa em 90 dias e exige recadastro completo; sistema não retém os documentos", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Com 90 dias o autônomo já tá inativo… você lança o pedido e tá tudo em branco, o Verum não gravou nada dos documentos, tem que colocar tudo de novo. / Eu tô amarrada o dia inteiro com o cliente e não tirei a venda de um pneu."}, {"id": 34, "achado": "Após concluir cadastro, sistema volta à home de contas em vez de abrir o cliente", "tipo": "Dor", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor interno (Frota)", "citacao": "Tu clica em concluir cadastro e volta pra página inicial do Verum, pra parte de contas, não abre a página do cadastro. / Se girar e já aparecer a página do João, eu já vou chorar de alegria."}, {"id": 35, "achado": "Cliente inativo pode ser atendido por outro vendedor — perda de carteira", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Vendi em março; quatro meses depois outro vendedor ofereceu as rodas e conseguiu vender porque ele estava inativo."}, {"id": 36, "achado": "Falta visibilidade da alçada de aprovação antes de enviar a OP (existia no 'Seu Esforço')", "tipo": "Oportunidade", "forca": "Relato recorrente", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor interno (Frota)", "citacao": "Quando a gente criava uma OP e colocava o desconto, já aparecia pra quem ela iria… se eu diminuir o desconto aqui, sai da alçada do gerente nacional e vai só pro filial. Isso ia ajudar a gente 200%, era muito ágil."}, {"id": 37, "achado": "Sem indicador visual de inadimplência (existia no sistema anterior)", "tipo": "Oportunidade", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Antigamente já apareciam os clientes inadimplentes, ficava vermelhinho embaixo do nome; hoje só vê quando vai lançar o pedido."}, {"id": 38, "achado": "Vendedores mantêm planilhas/bloco de notas paralelos por bug/desconfiança do sistema", "tipo": "Aprendizado", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor interno (Frota)", "citacao": "Eu sempre gosto de colocar em planilha porque dá algum bug ali dentro da plataforma, não consegue atualizar o resultado. / O gerente manda em PDF e eu converto pra Excel, que aí consigo filtrar e verificar qual cliente está ficando inativo."}, {"id": 39, "achado": "Uso mobile insuficiente para o volume de atendimento exigido", "tipo": "Dor", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Pelo celular eu consigo acessar, fazer o cadastro… mas essa quantidade de ligação e de clientes por dia você não consegue."}, {"id": 40, "achado": "Vendedor de frota é 'faz-tudo': venda, logística, cobrança, boleto, crédito", "tipo": "Aprendizado", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor interno (Frota)", "citacao": "O vendedor é quase um faz-tudo. Faz cobrança, corre atrás de logística, corre atrás de boleto pra cliente, corre atrás de limite de crédito, faz tudo. / Se eu não pegar pelo braço de cada um, o negócio não anda."}, {"id": 41, "achado": "Falta entrada + parcelamento e pagamento misto (existia no sistema anterior)", "tipo": "Oportunidade", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Tinha uma entrada, o cliente fazia PIX ou dinheiro e 30/60/90; na Cantu não tem… ou então pagar em dois cartões."}, {"id": 42, "achado": "Atendimento presencial leva 40 min–1h (até 3h em revenda); reputação de demora em Jaboatão", "tipo": "Dor", "forca": "Relato recorrente", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor interno (Frota)", "citacao": "Um cliente que vem comprar pneu com a gente não sai com menos de uma hora… o mínimo é 40 minutos pra cima; se for revenda pode colocar 3 horas. / A fama da Cantu aqui em Jaboatão é a empresa que mais demora a sair nota: 'se for pra lá, vá com calma, vá sem pressa'."}, {"id": 43, "achado": "Notas separadas geram frete duplicado; querem nota unificada com frete único", "tipo": "Oportunidade", "forca": "Caso concreto", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Se eu separar só um pneu à vista, ele cobra 100 de frete… queria que existisse uma forma de unir uma nota à outra e gerar só um frete."}, {"id": 44, "achado": "Vendedor cria OPs-modelo por medida com preço fixo para agilizar cotação no WhatsApp", "tipo": "Aprendizado", "forca": "Caso concreto", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor interno (Frota)", "citacao": "Eu tenho uma oportunidade dentro do Verum que eu atualizo semanalmente; crio várias oportunidades com várias medidas de pneus e deixo o preço fixo ali pra já passar pro meu cliente."}, {"id": 45, "achado": "Boleto de 10 dias é curto para autenticar", "tipo": "Oportunidade", "forca": "Relato único", "impacto": "Baixo", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Colocar 10 dias no boleto não dá tempo de autenticar; não é viável para o cliente."}, {"id": 46, "achado": "Integração com a Receita Federal preenche dados do cliente pelo CPF/CNPJ", "tipo": "O que funciona", "forca": "Relato único", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor interno (Frota)", "citacao": "O sistema é integrado com a Receita Federal, então ele consegue puxar o nome do cliente e a gente vai preenchendo só algumas coisas."}, {"id": 47, "achado": "Preço da tabela muda com frequência — consulta toda manhã", "tipo": "Aprendizado", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Verifico a tabela de preço toda manhã porque sempre muda; na GP a gente não mudava tanto o preço."}, {"id": 48, "achado": "Estoque do Vero não é confiável e diverge do físico e do SAP", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado", "varejo"], "perfil": "Comercial — Consultor comercial (B2B e B2Fleet)", "citacao": "Tem item que tem no SAP e não tem no Vero… o estoquista mostra que aparece pra ele, mas pra gente não aparece. / Vendi as rodas, estava aparecendo na Vero… o cliente pagou e, quando foi retirar, não tinha o material."}, {"id": 49, "achado": "Contorno: prepara a cotação antes de ligar e não passa valor com o cliente na linha", "tipo": "Aprendizado", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Eu não dou o valor na ligação; anoto tudo e verifico tudo no sistema, porque é complicado, demora."}, {"id": 50, "achado": "Retira no CD leva de 2 horas a um dia inteiro", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado", "varejo"], "perfil": "Comercial — Consultor comercial (B2B e B2Fleet)", "citacao": "Ele chega aqui de nove horas da manhã, vem sair meio-dia e meia, uma hora da tarde. / Não tenho uma entrega com 20, 30 minutos, não tenho."}, {"id": 51, "achado": "Lojas GP (varejo) não adotaram o Verum e seguem no Conect", "tipo": "Dor", "forca": "Relato recorrente", "impacto": "Alto", "status": "Bruto", "produtos": ["varejo"], "perfil": "Comercial — Vendedora de loja (GP / Varejo)", "citacao": "No treinamento eu não fui participar 100% porque estava com muito fluxo de atendimento… então eu prefiro ir pro Conect, que é o mais fácil pra mim."}, {"id": 52, "achado": "Erro de Inscrição Estadual na primeira compra trava a venda", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Consultor comercial (B2B / Revenda)", "citacao": "Muitas vezes eles não leem automaticamente a IE quando a gente lança o cadastro e sempre na primeira venda do cliente dá esse erro… já tive cliente de chegar de manhã, cinco e meia da tarde não ter sido resolvido e ter que voltar no dia seguinte."}, {"id": 53, "achado": "Busca por medida no Verum mostrou estoque de outras lojas e quebrou a confiança", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Alto", "status": "Bruto", "produtos": ["varejo"], "perfil": "Comercial — Vendedora de loja (GP / Varejo)", "citacao": "Joguei a medida, só que o Verum não me mostrou só os pneus da nossa loja, mostrou muito mais que não tem aqui, aí me confundi… as coisas não eram confiáveis."}, {"id": 54, "achado": "Código-pai não vinculado ao código-filho trava a venda e exige chamado no TI", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Consultor comercial (B2B / Revenda)", "citacao": "O código pai não está vinculado com o código filho, abre-se um chamado, e aquela venda que era pra ir com 20, 30 minutos foi quatro horas pra resolver, se resolver naquele dia."}, {"id": 55, "achado": "Conect: não dá para alterar a forma de pagamento após enviar a OS; recriar a OS é mais rápido que abrir chamado", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Médio", "status": "Bruto", "produtos": ["varejo"], "perfil": "Comercial — Vendedora de loja (GP / Varejo)", "citacao": "Se o cliente muda de ideia, eu não consigo trocar a forma de pagamento… é mais rápido recriar a OS do que abrir chamado e esperar alguém responder."}, {"id": 56, "achado": "Processo de mercado interno (cross: CPX→ITR→faturamento) reinicia a cada erro", "tipo": "Dor", "forca": "Relato recorrente", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Consultor comercial (B2B / Revenda)", "citacao": "Sai de CPX, passa pro ITR; quando chega no ITR vai pra questão do faturamento. Muitas vezes dentro desse processo tem um erro, aí não conclui a primeira venda, e a gente tem que abrir chamado."}, {"id": 57, "achado": "Conect: NF de fornecedor não entra automática — exige chamado, liberação e SKU antes de finalizar a OS", "tipo": "Dor", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["varejo"], "perfil": "Comercial — Vendedora de loja (GP / Varejo)", "citacao": "A nota de peça não cai no sistema logo que o fornecedor emite; tenho que abrir chamado, aguardar liberação, pegar o SKU pra depois finalizar… é bem chatinho."}, {"id": 58, "achado": "Nota/remessa faturada na filial não sobe para o sistema do vendedor externo", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado", "varejo"], "perfil": "Comercial — Consultor comercial (B2B e B2Fleet)", "citacao": "Não subiu a nota pra mim, então nem eu, olhando o sistema, consigo ter certeza que saiu… saiu lá na filial e não subiu pro meu sistema. / A remessa não subiu, e o cliente já tá com mais de uma hora esperando."}, {"id": 59, "achado": "Conect (o que funciona): busca por CPF puxa histórico de serviços, e-mail e cadastro; interface ágil", "tipo": "O que funciona", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["varejo"], "perfil": "Comercial — Vendedora de loja (GP / Varejo)", "citacao": "Se eu jogar o CPF já puxa, já vejo os serviços anteriores do cliente, o e-mail cadastrado, tudo certinho."}, {"id": 60, "achado": "Chamado aberto no Vero (Verônica) é respondido no Zendesk, sem acesso do vendedor", "tipo": "Dor", "forca": "Relato recorrente", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado", "varejo"], "perfil": "Comercial — Consultor comercial (B2B e B2Fleet)", "citacao": "A gente vendedor fica igual cego num tiroteio… a gente abre chamado no Vero e o pessoal responde pelo Zendesk, que vendedor não tem acesso. / Tem chamado meu aqui que demora três meses pra responder."}, {"id": 61, "achado": "Fluxo GP varejo: orçamento (sem placa/CPF) → aprovação → vira OS no Conect (placa e CPF obrigatórios) → finaliza", "tipo": "Aprendizado", "forca": "Relato único", "impacto": "Baixo", "status": "Bruto", "produtos": ["varejo"], "perfil": "Comercial — Vendedora de loja (GP / Varejo)", "citacao": "Aprovado o orçamento, ele vira OS; aí eu coloco a placa, os dados do cliente, cadastro se não tiver, e finalizo. Placa não é obrigatória no orçamento, mas na OS é."}, {"id": 62, "achado": "Sem pop-up/badge de chamado; notificação só por e-mail e com atraso", "tipo": "Dor", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado", "varejo"], "perfil": "Comercial — Consultor comercial (B2B e B2Fleet)", "citacao": "Não sobe um pop-up de notificação, e quando sobe no e-mail demora muito pra ver… deveria ficar um numerozinho do lado pra dizer que tinha uma conversa não lida."}, {"id": 63, "achado": "Instalação de produto comprado na PneuStore não aparece no painel da loja; cliente precisa recomprar", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Alto", "status": "Bruto", "produtos": ["varejo", "pneustore"], "perfil": "Comercial — Vendedor de loja (GP / Varejo)", "citacao": "o cliente não vê a opção de comprar a instalação no site… chega aqui e a gente não encontra no painel, aí ele tem que tirar do bolso de novo pra fazer outra compra pra instalar."}, {"id": 64, "achado": "NF de fornecedor não entra automática à tarde; exige chamado, PDF/XML e espera", "tipo": "Dor", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["varejo"], "perfil": "Comercial — Vendedor de loja (GP / Varejo)", "citacao": "nota que vem de manhã tá no sistema até umas 3h; à tarde dificilmente entra no mesmo dia… tenho que abrir chamado e mandar o PDF."}, {"id": 65, "achado": "Emissão da NF de serviço (ISS/prefeitura) é 100% manual, sem integração — copia-e-cola entre gov, SAP e Connect", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Alto", "status": "Bruto", "produtos": ["varejo"], "perfil": "Comercial — Vendedor de loja (GP / Varejo)", "citacao": "não tem nenhum sistema que faça essa integração, tem que usar o sistema do gov, tudo manual… exceto pra produto."}, {"id": 66, "achado": "Instabilidade: Connect/SAP caem e obrigam recomeçar o processo do zero", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Alto", "status": "Bruto", "produtos": ["varejo"], "perfil": "Comercial — Vendedor de loja (GP / Varejo)", "citacao": "caiu o Connect, caiu o SAP… tem que começar tudo de novo, volta pra página inicial e recoloca todos os números de cadastro."}, {"id": 67, "achado": "Após o pagamento, a OS fica 'azul' e exige finalizar manualmente; na correria entregam o carro antes de concluir", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Médio", "status": "Bruto", "produtos": ["varejo"], "perfil": "Comercial — Vendedor de loja (GP / Varejo)", "citacao": "finalizei o pagamento mas ficou azul; tenho que vir aqui e finalizar… o certo é esperar o relógio sair, mas na correria já entrego o carro e dou saída."}, {"id": 68, "achado": "Interrupções constantes (cliente de porta, carro de locadora) quebram o ritmo do atendimento no sistema", "tipo": "Aprendizado", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["varejo"], "perfil": "Comercial — Vendedor de loja (GP / Varejo)", "citacao": "a maior dor é ter que levantar pra atender cliente de porta, pegar o carro de locadora e voltar — perde o ritmo do processo."}, {"id": 69, "achado": "O que funciona: placa puxa dados do carro e CPF puxa o cliente; fluxo de OS tranquilo até precisar de peça de fora", "tipo": "O que funciona", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["varejo"], "perfil": "Comercial — Vendedor de loja (GP / Varejo)", "citacao": "é extremamente tranquilo; a gente só encontra problema quando precisa comprar uma peça de fora."}, {"id": 70, "achado": "Busca de produto não indica disponibilidade na filial de origem — verifica item por item", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Se eu não conhecer o estoque da minha filial, vou ter que catar de um por um onde é que estão os produtos… deveria ter uma indicação: esse tem na sua filial de origem."}, {"id": 71, "achado": "Busca de produto não permite filtrar por marca", "tipo": "Dor", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "No outro sistema eu colocava Gripmaster e aparecia toda a linha; aqui aparece passeio, carga, drift, tudo, e eu não posso botar Gripmaster só passeio."}, {"id": 72, "achado": "Pneu de carga exibe apenas a sigla, sem o tipo (direcional/tração/misto)", "tipo": "Dor", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Nos pneus de carga só tem a sigla; se você não conhecer a sigla, você não vende… no sistema da Bensifes tinha misto-direcional, misto-tração, direcional-tração."}, {"id": 73, "achado": "Formas de pagamento aparecem desordenadas (antes vinham por ordem crescente de prazo)", "tipo": "Oportunidade", "forca": "Relato recorrente", "impacto": "Baixo", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "As formas de pagamento não ficam na ordem; a gente estava acostumado com o sistema antigo que já vinha na ordem, aqui tem que procurar de um em um."}, {"id": 74, "achado": "NF lenta (25–30 min); erro de IE só aparece após o processamento e vira chamado de horas/dias", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "45 minutos o cara sentado esperando a nota fiscal sair… só que o pé tá com a inscrição errada, aí você vai saber depois dos 30 minutos… vai passar duas, três horas pra receber resposta de um chamado, ou dois dias."}, {"id": 75, "achado": "Pedido mínimo de R$ 3.000 barra revendas menores; transportadora de certas regiões não cadastrada", "tipo": "Oportunidade", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Fica a obrigatoriedade de comprar R$ 3.000; às vezes o cliente quer um pedido de R$ 2.500… seria bom baixar. Tem região que a transportadora atinge melhor e ainda não está no cadastro, a gente abre chamado pra incluir."}, {"id": 76, "achado": "Boleto sem baixa automática — cliente pago aparece inadimplente por 20 dias; resolução manual via Teams", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Tenho cliente que já pagou no dia certo, tem 20 dias com boleto aberto ainda, puxa como inadimplente… se você não for no Teams buscar as meninas, passa um, dois dias pra resolver."}, {"id": 77, "achado": "Bug do Tire Selector no Builder de LPs foi reportado de novo e ainda não tem correção", "tipo": "Dor", "forca": "Relato único", "impacto": "Médio", "status": "Bruto", "produtos": ["pneustore"], "perfil": "Performance Digital / Analista Marketing Designer", "citacao": "O B.O. do Tire Selector ou do URL? [...] o do Tire ainda não."}, {"id": 78, "achado": "Histórico de vendas não filtra por produto (quais clientes compraram determinado item)", "tipo": "Oportunidade", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "No outro sistema eu botava o código do produto e ele me dizia quais clientes compraram esse pneu… hoje eu tenho que ir no sistema antigo pra ver."}, {"id": 79, "achado": "Carrossel de produtos no mobile mostra 2 produtos por vez, mas a área pediu 1 por vez", "tipo": "Dor", "forca": "Relato único", "impacto": "Baixo", "status": "Bruto", "produtos": ["pneustore"], "perfil": "Performance Digital / Analista Marketing Designer", "citacao": "o Fernando quer um produto ali por vez e hoje a gente tá apresentando dois."}, {"id": 80, "achado": "O que funciona: clonagem de proposta, link de cartão, venda multi-depósito, variedade de planos, histórico por cliente", "tipo": "O que funciona", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Clonagem de proposta… gero o link e o cliente paga onde estiver, é espetacular… eu monto um pedido de 100 mil e vendo de quatro depósitos, remanejo os empenhos, é bem tranquilo."}, {"id": 81, "achado": "Sessão de carrossel com imagem quebra o layout no desktop ao rolar a página, cortando banners", "tipo": "Dor", "forca": "Relato único", "impacto": "Médio", "status": "Bruto", "produtos": ["pneustore"], "perfil": "Performance Digital / Analista Marketing Designer", "citacao": "tem uma quebra de layout que tem no formato desk, acho que é a sessão de carrossel com imagem [...] os banners cortados"}, {"id": 82, "achado": "Lentidão da OP: trava a partir do 5º–6º item; pedido de 30 itens levou quase um dia", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Até a quinta, sexta medida ele flui bem; depois passa cinco minutos pra virar o preço… eu tenho um cliente que me pediu 30 itens e passei quase um dia pra fazer o pedido."}, {"id": 83, "achado": "Campos de texto do Builder têm limite de caracteres sem aviso na interface", "tipo": "Dor", "forca": "Relato único", "impacto": "Médio", "status": "Bruto", "produtos": ["pneustore"], "perfil": "Performance Digital / Analista Marketing Designer", "citacao": "no subtítulo ele não me dizia que eu precisava ter um limite de caractere"}, {"id": 84, "achado": "Nomenclatura de produtos sem padrão (Trazano/TZN) e siglas de caminhão sem descrição; workaround Google", "tipo": "Dor", "forca": "Relato recorrente", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "O Trazano às vezes é escrito Trazano, às vezes TZN, a pessoa tem que adivinhar… pneu de caminhão bota D, T, I, S, A… eu uso muito o Google pra saber o que estou vendendo."}, {"id": 85, "achado": "Estrutura das sessões do Builder é rígida (tamanho de imagem fixo, sem inversão de lado, sem parágrafo em algumas sessões), limitando o resultado visual das LPs", "tipo": "Dor", "forca": "Relato único", "impacto": "Médio", "status": "Bruto", "produtos": ["pneustore"], "perfil": "Performance Digital / Analista Marketing Designer", "citacao": "tem muita coisa que tem limite de caractere. Então, tu não consegue trazer algo mais aprofundado."}, {"id": 86, "achado": "Preço atualiza online e varia — risco de repassar preço desatualizado ao cliente", "tipo": "Aprendizado", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "O sistema atualiza online, então hoje é um preço e amanhã é outro… às vezes eu faço uma simulação e colo no meu WhatsApp, já sei o preço mais ou menos."}, {"id": 87, "achado": "Não está claro se um SKU que zera no estoque e some do carrossel da LP volta a aparecer quando é reativado", "tipo": "Aprendizado", "forca": "Caso concreto", "impacto": "Médio", "status": "Bruto", "produtos": ["pneustore"], "perfil": "Performance Digital / Analista Marketing Designer", "citacao": "Eu peguei algumas LPs ali que eu sei que eu cadastrei 8, 9 SKUs e hoje a LP está com 2 SKUs ativos [...] Eu não sei se ele vai voltar, vai aparecer ali."}, {"id": 88, "achado": "Cotação de frete lenta; transportadora some das opções; incluir outra leva dias", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Às vezes tem transportadora e ela desaparece, só dá opção pra uma… pra incluir outra a gente pede à gerência e à logística e leva dias."}, {"id": 89, "achado": "Ordenação de LPs por data já existe na listagem, mas o ícone é discreto e passou despercebido por meses", "tipo": "Oportunidade", "forca": "Relato único", "impacto": "Baixo", "status": "Bruto", "produtos": ["pneustore"], "perfil": "Performance Digital / Analista Marketing Designer", "citacao": "É que ele tá discreto mesmo [...] o comum, o que geralmente o usuário está acostumado, é que tenha a barrinha de pesquisa mesmo."}, {"id": 90, "achado": "NF lenta, pior em CD não-fixo (2h presencial; 3–4h em outro CD); sem contorno", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Tem cliente que passa duas horas na filial pra emissão de nota… no meu CD é mais rápido, no outro passa 3, 4 horas… não tenho como contornar."}, {"id": 91, "achado": "Builder de LPs é percebido como muito mais rápido que o processo anterior via agência terceirizada", "tipo": "O que funciona", "forca": "Caso concreto", "impacto": "Alto", "status": "Bruto", "produtos": ["pneustore"], "perfil": "Performance Digital / Analista Marketing Designer", "citacao": "eu já desenvolvi 145 LPs [...] a gente desenvolveu em uma hora."}, {"id": 92, "achado": "O que funciona: variedade de formas de pagamento (melhor que o anterior) e cadastro intuitivo", "tipo": "O que funciona", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Na forma de pagamento a variedade é bem maior, melhor que o outro sistema… o cadastro é intuitivo, tá bem explicado."}, {"id": 93, "achado": "Feedbacks de melhoria levantados pelo usuário eram implementados pelo time de dev em 2 a 3 dias, com ponte direta pela Grace", "tipo": "O que funciona", "forca": "Relato único", "impacto": "Alto", "status": "Bruto", "produtos": ["pneustore"], "perfil": "Performance Digital / Analista Marketing Designer", "citacao": "Eu passava pra Grace, ela passava pro time de desenvolvimento e a implementação entrava em dois, três dias."}, {"id": 94, "achado": "Ausência de reserva de estoque na OP — perda de venda no meio da negociação (R$ 80 mil numa semana)", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "A gente lança uma OP e o pneu não sai do estoque, só sai quando fecha ganha… no meio da negociação acaba o pneu e eu perco. Semana retrasada eu perdi 80 mil em venda… no sistema antigo a reserva excluía sozinha em dois dias."}, {"id": 95, "achado": "Uso do backoffice por esse perfil se limita ao Builder de LPs e ao carrossel de produtos — FAQ, vitrine e módulos de e-commerce da PneuStore não fazem parte do fluxo", "tipo": "Aprendizado", "forca": "Relato único", "impacto": "Baixo", "status": "Bruto", "produtos": ["pneustore"], "perfil": "Performance Digital / Analista Marketing Designer", "citacao": "as outras opções que a gente tem aqui é mais pro Ecom da Pneu Store, né? Então, eu não utilizei muita coisa aqui porque eu não cheguei a mexer no Ecom da Pneu Store ainda."}, {"id": 96, "achado": "Carta de autorização difícil para frotista / retirada por terceiro — perde venda", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Quem retira é outro caminhoneiro e o comprador tá no meio da fazenda, não tem como imprimir autorização, nem sabe mexer… 'esse sistema não foi feito pra caminhoneiro'."}, {"id": 97, "achado": "Falta rastreio de transportadoras atualizado direto no sistema; o time precisa abrir manualmente cada site (TAM, E-TEX) para responder ao cliente", "tipo": "Dor", "forca": "Relato recorrente", "impacto": "Alto", "status": "Bruto", "produtos": ["pneustore"], "perfil": "Pós-venda — Atendimento (Canais Críticos / Reclame Aqui)", "citacao": "Vamos supor, ao invés da gente ter que entrar no site da transportadora para que a gente possa ter aquela atualização, já ter algo ali atualizado no sistema."}, {"id": 98, "achado": "NF lenta citada pelos clientes — migração para a concorrência por R$ 5–10", "tipo": "Dor", "forca": "Relato recorrente", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Chegou um cliente na concorrência reclamando que na GP Pneus a demora é muito grande; se tiver diferença de 5, 10 reais por pneu, ele prefere comprar em outro lugar, por conta da demora e dos boletos."}, {"id": 99, "achado": "Times de expedição, serviço e garantia usam Teams e formulários próprios em vez de centralizar no Zendesk, gerando cobrança repetitiva e retrabalho", "tipo": "Dor", "forca": "Relato recorrente", "impacto": "Alto", "status": "Bruto", "produtos": ["pneustore"], "perfil": "Pós-venda — Atendimento (Canais Críticos / Reclame Aqui)", "citacao": "a gente tem grupos de expedição... eu preciso cobrar pelo Teams. Mas assim, eu acredito que é a única, o time de serviço também. Serviço e expedição é o único que a gente usa o Teams para cobrar o retorno. Garantia também."}, {"id": 100, "achado": "Boleto sem baixa pós-migração — conta bloqueada de cliente adimplente; pede comprovante", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Boleto que o cliente pagou e não baixou, 10 dias depois a conta do cliente está bloqueada… é constrangedor cobrar um cliente que pagou. Tem cliente que se recusa a mandar comprovante."}, {"id": 101, "achado": "Não existe sinalização automática de urgência no Zendesk; tickets do RA ficam parados mesmo com prioridade já definida no formulário de frente/área", "tipo": "Dor", "forca": "Relato recorrente", "impacto": "Alto", "status": "Bruto", "produtos": ["pneustore"], "perfil": "Pós-venda — Atendimento (Canais Críticos / Reclame Aqui)", "citacao": "Botar um sininho no setor, quando a gente clicar assim, a reclamação ficar pitando na cabeça deles, até eles dar um retorno pra gente imediato, seria muito bom."}, {"id": 102, "achado": "Bug do ícone de cobrança — painel zerado para uns, todos inadimplentes (até à vista) para outros", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "O meu tá totalmente zerado, como se eu não tivesse clientes vencidos; o do meu colega mostra todos os clientes inadimplentes, até os que pagam à vista."}, {"id": 103, "achado": "Quando áreas parceiras não respondem, o time escala para a líder Camila, sobrecarregando-a — falta um ponto focal dedicado em cada área", "tipo": "Dor", "forca": "Relato único", "impacto": "Médio", "status": "Bruto", "produtos": ["pneustore"], "perfil": "Pós-venda — Atendimento (Canais Críticos / Reclame Aqui)", "citacao": "isso acaba às vezes... sobrecarregando, essa é exatamente a palavra, sobrecarregando. Eu acho que se a gente mandasse logo lá na expedição, eles já respondessem, não existiria necessidade de estar encaminhando alguma coisa pra ela."}, {"id": 104, "achado": "Vendedor absorve todo o pós-venda (boleto, 2ª via, estorno), tirando foco de vender", "tipo": "Aprendizado", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "A venda só finaliza quando o cliente recebe… boleto, segunda via, se não der certo um estorno, tudo é o vendedor, a gente perde muito tempo."}, {"id": 105, "achado": "Não está claro se reclamar no Reclame Aqui já implica aceite do cliente para receber novas pesquisas; hoje o time usa nota 10 como proxy de segurança, não um aceite formal (LGPD)", "tipo": "Aprendizado", "forca": "Relato único", "impacto": "Alto", "status": "Bruto", "produtos": ["pneustore"], "perfil": "Pós-venda — Atendimento (Canais Críticos / Reclame Aqui)", "citacao": "essa informação eu não tenho muito acesso... eu não sei se a gente tem muito controle sobre isso."}, {"id": 106, "achado": "Busca de produto na OP não filtra por marca (só na cotação); workaround copiar SKU — pior no celular", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Na aba de adicionar produto ele não tira o resultado específico de uma marca, sendo que na cotação tira… eu pesquiso na cotação, pego o SKU e colo; no computador é fácil, no celular gera fricção."}, {"id": 107, "achado": "Canais receptivos primários (WhatsApp, 0800) seriam mais viáveis para pesquisa complementar do que o próprio Reclame Aqui, já que a avaliação do RA é padrão fixo do produto e não aceita pergunta extra", "tipo": "Aprendizado", "forca": "Relato único", "impacto": "Médio", "status": "Bruto", "produtos": ["pneustore"], "perfil": "Pós-venda — Atendimento (Canais Críticos / Reclame Aqui)", "citacao": "a avaliação que ele tem é uma avaliação que vai para o reclame aqui. Não tem como fazer qualquer tipo de mudança... é meio que padrão."}, {"id": 108, "achado": "Chamado não sincroniza entre dispositivos — ticket aberto no celular não abre no notebook para anexar", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Todo ticket que a gente abre só pode ser visualizado no navegador que você abriu… abri no celular na rua e depois no notebook não tinha como anexar."}, {"id": 109, "achado": "Integração Rugby ↔ Zendesk hoje é resiliente: qualquer ação em um sistema reflete no outro, resolvendo a falha de integração recorrente do ano passado", "tipo": "O que funciona", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["pneustore"], "perfil": "Pós-venda — Atendimento (Canais Críticos / Reclame Aqui)", "citacao": "hoje em dia qualquer interação que tu faça com uma reclamação dentro do rugby, ele cai dentro do Zendesk, então caso não haja alguma integração é só ir pelo rugby que vai dar bom."}, {"id": 110, "achado": "Busca por CNPJ ausente na aba de contas (só por nome)", "tipo": "Oportunidade", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Na busca da aba de contas não dá pra buscar por CNPJ, só pelo nome da conta; na barra de cima mostra, mas embaixo não."}, {"id": 111, "achado": "[Método] O time já liga/manda WhatsApp manualmente para clientes nota 10 pedindo avaliação — esse vínculo já construído é a via de menor risco para inserir uma pergunta extra de pesquisa, mas hoje depende de busca manual linha a linha numa base exportada do Rugby", "tipo": "Oportunidade", "forca": "Caso concreto", "impacto": "Médio", "status": "Bruto", "produtos": ["pneustore"], "perfil": "Pós-venda — Atendimento (Canais Críticos / Reclame Aqui)", "citacao": "eu posso ir nesses clientes que já avaliaram com 10... a gente faz isso manualmente, a gente pega o número do cliente aqui, coloca aqui no WhatsApp, encaminha a mensagem para ele."}, {"id": 112, "achado": "Falta campo de justificativa textual ao enviar o cadastro para análise de crédito (só anexa print)", "tipo": "Oportunidade", "forca": "Relato único", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Sinto falta de, na hora de mandar o cadastro, ter uma abinha igual a que a gente manda pra UPA, pra explicar pro crédito o que a gente está fazendo; só botar o print às vezes não é claro."}, {"id": 113, "achado": "Não é possível ver com qual vendedor/equipe está um cliente ativo de outra região — o gestor não abre o histórico e não decide se vale prospectar", "tipo": "Dor", "forca": "Relato recorrente", "impacto": "Alto", "status": "Bruto", "produtos": ["varejo"], "perfil": "Comercial — Gerente comercial de filial", "citacao": "Eu acesso aqui um cliente e não consigo abrir o histórico dele. Eu sei que ele tá com alguém, mas não sei com quem ele tá."}, {"id": 114, "achado": "Campo de referência obrigatório difícil na região Norte (sem camaradagem entre autocentros)", "tipo": "Dor", "forca": "Relato único", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Ele pede um campo obrigatório de referência… aqui não tem camaradagem entre os autocentros, então eu preencho com alguém que trabalha na empresa."}, {"id": 115, "achado": "Estoque aparece unificado entre empresas (Speedmax, GP, Gripmaster): o vendedor vê o pneu de outra empresa mas não pode vender, gerando frustração", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Médio", "status": "Bruto", "produtos": ["varejo"], "perfil": "Comercial — Gerente comercial de filial", "citacao": "Os estoques são todos juntos, de todas as empresas. Vejo o estoque da GP, da Gripmaster, mas não necessariamente posso vender os produtos deles, isso é um pouco ruim."}, {"id": 116, "achado": "OP fecha com erro sem indicar a causa — dificulta abrir o chamado no setor certo", "tipo": "Dor", "forca": "Relato único", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Já apareceu fechada com erro e eu tive dificuldade de identificar qual era o erro pra abrir o chamado no lugar certo… se tivesse um pop-up dizendo se é cadastro ou SAP."}, {"id": 117, "achado": "O sistema mostra pneus disponíveis que não existem fisicamente na hora de faturar", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Médio", "status": "Bruto", "produtos": ["varejo"], "perfil": "Comercial — Gerente comercial de filial", "citacao": "Às vezes o estoque ainda não bate… tem quatro pneus ali, você vai atrás fazer um faturamento e não acha os pneus."}, {"id": 118, "achado": "O que funciona: fluxo de OP ágil e claro; cadastro adequado; e-mail obrigatório positivo", "tipo": "O que funciona", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Eu acho o fluxo muito ágil, pra lançar e pra fechar é muito claro, tenho pouquíssima dificuldade… o e-mail obrigatório eu vejo como positivo."}, {"id": 119, "achado": "O Verum trava e fica lento no celular, atrapalhando o uso em campo (não é responsivo)", "tipo": "Dor", "forca": "Relato recorrente", "impacto": "Alto", "status": "Bruto", "produtos": ["varejo"], "perfil": "Comercial — Gerente comercial de filial", "citacao": "De vez em quando ele trava muito… é um Samsung, 256… não era pra travar tanto. Ele não é responsivo."}, {"id": 120, "achado": "Boleto sem baixa — cliente pago aparece inadimplente ao fechar a OP; abre ticket para o crédito", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Quando eu vou fechar a oportunidade, dá cliente inadimplente, o boleto tá pago mas vencido no sistema… aí tenho que abrir um ticket pro crédito liberar; se o cliente já caísse direto na fila do crédito."}, {"id": 121, "achado": "Não há registro nativo de atividades da equipe (ligações/visitas); o gestor mantém planilha Excel própria e quer taxa de conversão por vendedor", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Alto", "status": "Bruto", "produtos": ["varejo"], "perfil": "Comercial — Gerente comercial de filial", "citacao": "A parte de controlar a atividade deles: quantas visitas/ligações fez, quantos clientes diferentes falou naquele período."}, {"id": 122, "achado": "Nomenclatura de pneus sem categoria (295 Dínamo SR500) — vendedor novo/de outra região perde venda", "tipo": "Dor", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Quem começa não identifica pelo SR500 se é direcional, tração ou misto… se tivesse '295 Dínamo direcional' ficaria mais fácil; posso perder a venda por não conhecer."}, {"id": 123, "achado": "Fluxo de aprovação por alçadas (Filial→Regional→Nacional→Diretoria) atende bem: o gestor age como filtro, analisando margem líquida, produto, frete e prazo", "tipo": "O que funciona", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["varejo"], "perfil": "Comercial — Gerente comercial de filial", "citacao": "Eu sou um filtro. São níveis de filtro… pra que ele não receba na cara todas as aprovações."}, {"id": 124, "achado": "Chamados: não buscam por número, somem da listagem, não anexam arquivo e só respondem no PC em que foram abertos", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Vendedor(a) de atacado", "citacao": "Nenhum resultado encontrado mesmo com o ticket existindo… dentro do ticket eu não consigo anexar nenhum documento… se eu abrir no celular ou no notebook de casa eu não consigo responder, só nesse computador que abri."}, {"id": 125, "achado": "Busca de cliente por CNPJ mostra cadastro, proprietário, status (ativo/inativo/prospecto) e histórico — apoia a decisão de carteira", "tipo": "O que funciona", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["varejo"], "perfil": "Comercial — Gerente comercial de filial", "citacao": "Dou o nome/CNPJ do cliente, vejo se está cadastrado, quem é o proprietário da conta, se é ativo, inativo ou prospecto."}, {"id": 126, "achado": "A acurácia do estoque em tempo real melhorou muito frente ao passado", "tipo": "O que funciona", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["varejo"], "perfil": "Comercial — Gerente comercial de filial", "citacao": "Hoje bate muito mais do que no passado… melhorou muito, tá melhorando, acho que vai zerar."}, {"id": 127, "achado": "Regras fiscais interestaduais exigem checar a filial de origem do estoque na aprovação (ex.: roda só dentro do estado; montadora fatura de SC por ganho fiscal)", "tipo": "Aprendizado", "forca": "Caso concreto", "impacto": "Médio", "status": "Bruto", "produtos": ["varejo"], "perfil": "Comercial — Gerente comercial de filial", "citacao": "Roda é um produto que você não pode vender de estado para estado… todos esses produtos para montadora saem de Santa Catarina, porque tem ganho fiscal."}, {"id": 128, "achado": "O painel inicial tem delay de atualização e não reflete o faturamento em tempo real; o Excel exportado bate, o painel não", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Líder administrativo de vendas", "citacao": "Mais de um milhão e meio fechado… não roda automático, tem delay de atualização. Quando extraio o Excel, ele me dá exatamente o que foi faturado."}, {"id": 129, "achado": "Vendedores não conseguem exportar a própria carteira — dependem do gestor enviar", "tipo": "Dor", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Líder administrativo de vendas", "citacao": "Eu daria a possibilidade para o vendedor extrair a carteira dele… hoje o gestor manda pra gente."}, {"id": 130, "achado": "A Visão de Contas trava ao rolar carteiras grandes (~800 clientes) até ver todos", "tipo": "Dor", "forca": "Caso concreto", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Líder administrativo de vendas", "citacao": "Imagina eu com 800 clientes na carteira… vou avançando e chega uma hora que trava."}, {"id": 131, "achado": "Chamados são a maior reclamação do canal HT: sem prazo de SLA, sem número do cliente e com falha no vínculo da oportunidade; layout precisa ser remodelado", "tipo": "Dor", "forca": "Relato recorrente", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Líder administrativo de vendas", "citacao": "Não tem prazo de SLA. O número do cliente não vem. O número da oportunidade atrelado está com falha."}, {"id": 132, "achado": "A aba de Abastecimento não mostra quais oportunidades estão dentro do fluxo de abastecimento", "tipo": "Oportunidade", "forca": "Relato único", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Líder administrativo de vendas", "citacao": "É muito bacana, mas você não consegue ver detalhado quais oportunidades estão dentro desse abastecimento."}, {"id": 133, "achado": "Tarefas/atividades ficam em campo separado; deveriam estar dentro da conta/oportunidade (como no Salesforce), com histórico — função perdida na migração", "tipo": "Dor", "forca": "Relato recorrente", "impacto": "Alto", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Líder administrativo de vendas", "citacao": "Deveria ser igual o Salesforce, com a tarefa dentro da conta, dentro da oportunidade, não em campo apartado… a gente perdeu isso."}, {"id": 134, "achado": "A tela de estoque por SKU mostra produto e as filiais que o têm — funciona muito bem", "tipo": "O que funciona", "forca": "Relato recorrente", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Líder administrativo de vendas", "citacao": "Coloca o SKU do estoque, que traz todas as informações de produtos, as filiais que têm esse produto, muito bacana."}, {"id": 135, "achado": "A cotação rápida sem cadastro completo do cliente permite passar preço na hora e apoia as vendedoras", "tipo": "O que funciona", "forca": "Caso concreto", "impacto": "Médio", "status": "Bruto", "produtos": ["atacado"], "perfil": "Comercial — Líder administrativo de vendas", "citacao": "A gente dá a possibilidade de não fazer cadastro do cliente… você passa o preço bem rápido. Muito bacana, uso para ajudar as meninas."}]
 };
 
 /* ======================================================================
    LÓGICA
    ====================================================================== */
 const PRODUCT_KEYS = ['todos', 'pneustore', 'atacado', 'varejo'];
+const PRODUTO_LABEL = { pneustore: 'PneuStore', atacado: 'VS Atacado', varejo: 'VS Varejo' };
 let currentProduto = 'todos';
+let activeFilter = null;     // { field:'tipo'|'impacto'|'forca'|'status', value } ou { field:'matrix', impacto, forca }
+let vozesExpanded = false;
+let vozesTipoQuick = null;   // filtro rápido de tipo, só afeta a vitrine curada (sem activeFilter)
 
 /* Cores semânticas (par -100/-700, lib/tone.ts) só onde a categoria carrega
    valor de negócio real (Tipo, Impacto). O resto usa a paleta genérica
@@ -662,10 +871,13 @@ const COLOR_IMPACTO = {
   'Não definido': 'var(--border)'
 };
 const CHART_CYCLE = ['var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)', 'var(--chart-4)', 'var(--chart-5)'];
+const CHART_CYCLE_HEX = ['#c96442','#3b8ea5','#1f3a5f','#e0b93c','#dd8d29']; // aprox. visual dos chart-1..5 p/ SVG (currentColor não funciona em stroke-dasharray fill separado)
 
 const TONE_BADGE = { neutral: 'badge-neutral', info: 'badge-info', success: 'badge-success', warning: 'badge-warning', error: 'badge-error' };
 const PRODUTO_TONE = { pneustore: 'info', atacado: 'warning', varejo: 'success' };
 const TIPO_TONE = { 'Dor': 'error', 'Oportunidade': 'success', 'Aprendizado': 'info', 'O que funciona': 'neutral' };
+const FORCA_ORDER = ['Dado quantitativo','Caso concreto','Relato recorrente','Relato único','Sem evidência'];
+const IMPACTO_ORDER = ['Alto','Médio','Baixo'];
 
 function el(tag, cls, html){
   const e = document.createElement(tag);
@@ -674,7 +886,78 @@ function el(tag, cls, html){
   return e;
 }
 
-function renderBars(containerId, dataObj, colorMap){
+function getAchado(id){
+  return DATA.achadosIndex.find(a => a.id === id) || null;
+}
+
+function achadoMatchesProduto(a, produtoKey){
+  return produtoKey === 'todos' ? true : a.produtos.includes(produtoKey);
+}
+
+function achadoMatchesFilter(a, filter){
+  if(!filter) return true;
+  if(filter.field === 'matrix') return a.impacto === filter.impacto && a.forca === filter.forca;
+  return a[filter.field] === filter.value;
+}
+
+/* ---------- Tooltip ---------- */
+const ttEl = document.getElementById('tt');
+function tipHTML(label, value, total, defText){
+  let html = `<b>${label}</b>: ${value}`;
+  if(total){ html += ` (${pct(value, total)} do total)`; }
+  if(defText){ html += `<span class="tt-def">${defText}</span>`; }
+  return html;
+}
+function showTip(x, y, html){
+  ttEl.innerHTML = html;
+  ttEl.classList.add('show');
+  positionTip(x, y);
+}
+function positionTip(x, y){
+  const pad = 14;
+  let left = x + pad, top = y + pad;
+  const rect = ttEl.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth - 8) left = x - rect.width - pad;
+  if(top + rect.height > window.innerHeight - 8) top = y - rect.height - pad;
+  ttEl.style.left = left + 'px';
+  ttEl.style.top = top + 'px';
+}
+function hideTip(){ ttEl.classList.remove('show'); }
+function attachTip(node, htmlFn){
+  node.addEventListener('mouseenter', e => showTip(e.clientX, e.clientY, htmlFn()));
+  node.addEventListener('mousemove', e => positionTip(e.clientX, e.clientY));
+  node.addEventListener('mouseleave', hideTip);
+}
+// info-dot estáticos (definição única, sem valor/percentual)
+document.querySelectorAll('[data-tip-def]').forEach(node => {
+  const key = node.getAttribute('data-tip-def');
+  const def = DEFINITIONS[key];
+  if(typeof def === 'string') attachTip(node, () => def);
+});
+
+function pct(n, total){
+  if(!total) return '0%';
+  return Math.round(n/total*100) + '%';
+}
+
+/* ---------- Count-up ---------- */
+function animateCountUp(node, to, duration){
+  duration = duration || 500;
+  const from = 0;
+  const start = performance.now();
+  function step(now){
+    const t = Math.min(1, (now - start) / duration);
+    const eased = 1 - Math.pow(1 - t, 3);
+    node.textContent = Math.round(from + (to - from) * eased);
+    if(t < 1) requestAnimationFrame(step);
+    else node.textContent = to;
+  }
+  requestAnimationFrame(step);
+}
+
+/* ---------- Barras (clicáveis + tooltip) ---------- */
+function renderBars(containerId, dataObj, colorMap, opts){
+  opts = opts || {};
   const container = document.getElementById(containerId);
   container.innerHTML = '';
   const entries = Object.entries(dataObj).filter(([,v]) => v > 0);
@@ -683,9 +966,13 @@ function renderBars(containerId, dataObj, colorMap){
     return;
   }
   const max = Math.max(...entries.map(([,v]) => v));
+  const total = opts.total || entries.reduce((s,[,v]) => s+v, 0);
+  const defs = opts.defs || null;
+  const filterField = opts.filterField || null;
   entries.sort((a,b) => b[1]-a[1]);
   entries.forEach(([label, value], i) => {
-    const row = el('div', 'bar-row');
+    const isActive = filterField && activeFilter && activeFilter.field === filterField && activeFilter.value === label;
+    const row = el('div', 'bar-row' + (filterField ? ' clickable' : '') + (isActive ? ' is-active' : ''));
     row.appendChild(el('span', 'bar-label', label));
     const track = el('div', 'bar-track');
     const fill = el('div', 'bar-fill');
@@ -694,13 +981,194 @@ function renderBars(containerId, dataObj, colorMap){
     track.appendChild(fill);
     row.appendChild(track);
     row.appendChild(el('span', 'bar-value', value));
+    attachTip(row, () => tipHTML(label, value, total, defs ? defs[label] : null));
+    if(filterField){
+      row.addEventListener('click', () => {
+        toggleFilter({ field: filterField, value: label, label: `${filterFieldLabel(filterField)}: ${label}` });
+      });
+    }
     container.appendChild(row);
   });
 }
 
-function pct(n, total){
-  if(!total) return '0%';
-  return Math.round(n/total*100) + '%';
+function filterFieldLabel(field){
+  return { tipo:'Tipo', impacto:'Impacto', forca:'Força da evidência', status:'Status' }[field] || field;
+}
+
+function toggleFilter(f){
+  if(activeFilter && activeFilter.field === f.field && activeFilter.value === f.value){
+    activeFilter = null;
+  } else {
+    activeFilter = f;
+    vozesTipoQuick = null;
+  }
+  vozesExpanded = false;
+  renderAchadosCharts(DATA[currentProduto]);
+  renderVozes();
+  document.getElementById('vozes-grid').scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+/* ---------- Donut (Tipo / Camada) ---------- */
+function renderDonut(containerId, dataObj, colorMap, opts){
+  opts = opts || {};
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  const entries = Object.entries(dataObj).filter(([,v]) => v > 0).sort((a,b)=>b[1]-a[1]);
+  if(entries.length === 0){
+    container.appendChild(el('div', 'empty-note', 'Sem dados para este recorte.'));
+    return;
+  }
+  const total = opts.total || entries.reduce((s,[,v]) => s+v, 0);
+  const defs = opts.defs || null;
+  const filterField = opts.filterField || null;
+  const R = 42, C = 2*Math.PI*R, SW = 18;
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(svgNS, 'svg');
+  svg.setAttribute('viewBox','0 0 100 100');
+  svg.setAttribute('width','128'); svg.setAttribute('height','128');
+  svg.classList.add('donut-svg');
+  const bg = document.createElementNS(svgNS,'circle');
+  bg.setAttribute('cx','50'); bg.setAttribute('cy','50'); bg.setAttribute('r',R);
+  bg.setAttribute('fill','none'); bg.setAttribute('stroke','var(--muted)'); bg.setAttribute('stroke-width',SW);
+  svg.appendChild(bg);
+  let offset = 0;
+  const wrap = el('div','donut-block');
+  const legend = el('div','donut-legend');
+  entries.forEach(([label,value], i) => {
+    const frac = value/total;
+    const len = frac*C;
+    const seg = document.createElementNS(svgNS,'circle');
+    seg.setAttribute('cx','50'); seg.setAttribute('cy','50'); seg.setAttribute('r',R);
+    seg.setAttribute('fill','none');
+    const color = colorMap ? (colorMap[label] || CHART_CYCLE_HEX[i%5]) : CHART_CYCLE_HEX[i%5];
+    seg.setAttribute('stroke', color.startsWith('var') ? getComputedStyle(document.documentElement).getPropertyValue(color.slice(4,-1)).trim() || '#999' : color);
+    seg.setAttribute('stroke-width', SW);
+    seg.setAttribute('stroke-dasharray', `${len} ${C-len}`);
+    seg.setAttribute('stroke-dashoffset', -offset);
+    seg.setAttribute('transform','rotate(-90 50 50)');
+    const isActive = filterField && activeFilter && activeFilter.field === filterField && activeFilter.value === label;
+    if(isActive){ seg.setAttribute('stroke-width', SW+4); }
+    attachTip(seg, () => tipHTML(label, value, total, defs ? defs[label] : null));
+    if(filterField){
+      seg.style.cursor = 'pointer';
+      seg.addEventListener('click', () => toggleFilter({ field: filterField, value: label, label: `${filterFieldLabel(filterField)}: ${label}` }));
+    }
+    svg.appendChild(seg);
+    offset += len;
+
+    const item = el('div','donut-legend-item' + (isActive ? ' is-active' : ''));
+    const dot = el('span','donut-legend-dot');
+    dot.style.background = seg.getAttribute('stroke');
+    item.appendChild(dot);
+    item.appendChild(el('span','donut-legend-label', label));
+    item.appendChild(el('span','donut-legend-value', value + ' · ' + pct(value,total)));
+    attachTip(item, () => tipHTML(label, value, total, defs ? defs[label] : null));
+    if(filterField){
+      item.addEventListener('click', () => toggleFilter({ field: filterField, value: label, label: `${filterFieldLabel(filterField)}: ${label}` }));
+    }
+    legend.appendChild(item);
+  });
+  const centerWrap = el('div');
+  centerWrap.style.position='relative';
+  centerWrap.appendChild(svg);
+  const centerText = el('div');
+  centerText.style.position='absolute'; centerText.style.inset='0';
+  centerText.style.display='flex'; centerText.style.flexDirection='column';
+  centerText.style.alignItems='center'; centerText.style.justifyContent='center';
+  centerText.innerHTML = `<span class="donut-center-value">${total}</span><span class="donut-center-label">total</span>`;
+  centerWrap.appendChild(centerText);
+  wrap.appendChild(centerWrap);
+  wrap.appendChild(legend);
+  container.appendChild(wrap);
+}
+
+/* ---------- Matriz Impacto x Força ---------- */
+function renderMatrix(containerId, matrixObj){
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  let max = 0;
+  IMPACTO_ORDER.forEach(imp => FORCA_ORDER.forEach(f => { max = Math.max(max, (matrixObj[imp]||{})[f] || 0); }));
+  const table = el('table','matrix');
+  const thead = el('thead');
+  const hr = el('tr');
+  hr.appendChild(el('th',''));
+  FORCA_ORDER.forEach(f => hr.appendChild(el('th','', f.replace(' ', '<br>'))));
+  thead.appendChild(hr);
+  table.appendChild(thead);
+  const tbody = el('tbody');
+  IMPACTO_ORDER.forEach(imp => {
+    const row = el('tr');
+    row.appendChild(el('th','row-h', imp));
+    FORCA_ORDER.forEach(f => {
+      const n = (matrixObj[imp]||{})[f] || 0;
+      const isRisk = imp === 'Alto' && (f === 'Relato único' || f === 'Sem evidência') && n > 0;
+      const td = el('td', n === 0 ? 'zero' : '' , String(n));
+      if(isRisk) td.classList.add('risk');
+      if(n > 0){
+        const alpha = 0.12 + 0.7*(n/max);
+        td.style.background = `color-mix(in srgb, var(--primary) ${Math.round(alpha*100)}%, white)`;
+        if(alpha > 0.55) td.style.color = '#fff';
+      }
+      const isActive = activeFilter && activeFilter.field === 'matrix' && activeFilter.impacto === imp && activeFilter.forca === f;
+      if(isActive) td.style.outline = '2px solid var(--foreground)';
+      attachTip(td, () => {
+        let html = `<b>Impacto ${imp} × ${f}</b>: ${n} achado${n===1?'':'s'}`;
+        if(isRisk) html += `<span class="tt-def">Alto impacto sustentado só por evidência fraca — reforçar antes de decidir.</span>`;
+        return html;
+      });
+      if(n > 0){
+        td.addEventListener('click', () => toggleFilter({ field:'matrix', impacto: imp, forca: f, label: `${imp} × ${f}` }));
+      }
+      row.appendChild(td);
+    });
+    tbody.appendChild(row);
+  });
+  table.appendChild(tbody);
+  container.appendChild(table);
+
+  const legend = el('div','matrix-legend');
+  legend.innerHTML = `
+    <span class="sw"><span class="box" style="background:color-mix(in srgb, var(--primary) 15%, white)"></span>poucos achados</span>
+    <span class="sw"><span class="box" style="background:color-mix(in srgb, var(--primary) 75%, white)"></span>muitos achados</span>
+    <span class="sw"><span class="box" style="box-shadow:inset 0 0 0 2px var(--error-700); background:#fff;"></span>Alto impacto + evidência fraca — reforçar</span>
+  `;
+  container.appendChild(legend);
+}
+
+/* ---------- Cobertura lado a lado (sempre os 3 produtos) ---------- */
+function renderCoverageCompare(){
+  const container = document.getElementById('coverage-compare');
+  container.innerHTML = '';
+  const wrap = el('div','coverage-compare');
+  ['pneustore','atacado','varejo'].forEach(key => {
+    const d = DATA[key];
+    const total = d.contatos.total;
+    const op = d.contatos.porCamada['Operacional'] || 0;
+    const ger = d.contatos.porCamada['Gerência'] || 0;
+    const row = el('div','coverage-row');
+    const head = el('div','coverage-row-head');
+    head.appendChild(el('span','', PRODUTO_LABEL[key]));
+    head.appendChild(el('span','text-muted', total + ' contatos'));
+    row.appendChild(head);
+    const bars = el('div','coverage-bars');
+    [['Operacional', op, 'var(--success-700)'], ['Gerência', ger, 'var(--warning-700)']].forEach(([label,val,color]) => {
+      const line = el('div','coverage-bar-line');
+      line.appendChild(el('span','coverage-bar-tag', label));
+      const track = el('div','coverage-bar-track');
+      const fill = el('div','coverage-bar-fill');
+      const p = total ? Math.round(val/total*100) : 0;
+      fill.style.width = p + '%';
+      fill.style.background = color;
+      track.appendChild(fill);
+      line.appendChild(track);
+      line.appendChild(el('span','coverage-bar-pct', p + '%'));
+      attachTip(line, () => tipHTML(`${PRODUTO_LABEL[key]} · ${label}`, val, total, DEFINITIONS.camada[label]));
+      bars.appendChild(line);
+    });
+    row.appendChild(bars);
+    wrap.appendChild(row);
+  });
+  container.appendChild(wrap);
 }
 
 function renderKPIs(d){
@@ -708,31 +1176,36 @@ function renderKPIs(d){
   grid.innerHTML = '';
   const usuariosPct = pct(d.contatos.usuarios, d.contatos.total);
   const cards = [
-    { label: 'Achados', value: d.achados.total, sub: d.achados.dores + ' são Dores' },
-    { label: 'Alto impacto', value: d.achados.altoImpacto, sub: d.achados.altoImpactoFraco + ' com evidência fraca' },
-    { label: 'Conversas', value: d.pesquisas.total, sub: 'registradas na Roda' },
-    { label: 'Contatos', value: d.contatos.total, sub: usuariosPct + ' são Usuários' }
+    { label: 'Achados', value: d.achados.total, sub: d.achados.dores + ' são Dores', tip: 'Conta todos os registros da base Achados neste recorte de produto.' },
+    { label: 'Alto impacto', value: d.achados.altoImpacto, sub: d.achados.altoImpactoFraco + ' com evidência fraca', tip: 'Achados com Impacto = Alto. O número ao lado mostra quantos têm evidência fraca (Relato único ou Sem evidência).' },
+    { label: 'Conversas', value: d.pesquisas.total, sub: 'registradas na Roda', tip: 'Conta as pesquisas (conversas) registradas na base Pesquisas.' },
+    { label: 'Contatos', value: d.contatos.total, sub: usuariosPct + ' são Usuários', tip: 'Conta pessoas mapeadas na base Contatos. O % mostra quantas têm o papel Usuário na pesquisa.' }
   ];
   cards.forEach(c => {
     const card = el('div', 'card');
     const stat = el('div', 'stat');
-    stat.appendChild(el('span', 'stat-label', c.label));
-    stat.appendChild(el('span', 'stat-value', c.value));
+    const labelRow = el('div','stat-label-row');
+    labelRow.appendChild(el('span', 'stat-label', c.label));
+    const dot = el('span','info-dot','?');
+    attachTip(dot, () => c.tip);
+    labelRow.appendChild(dot);
+    stat.appendChild(labelRow);
+    const valueEl = el('span', 'stat-value', '0');
+    stat.appendChild(valueEl);
     stat.appendChild(el('span', 'stat-caption', c.sub));
     card.appendChild(stat);
     grid.appendChild(card);
+    animateCountUp(valueEl, c.value);
   });
 }
 
 function renderCallouts(d, produtoKey){
-  // Achados
   const fracoTxt = d.achados.altoImpactoFraco > 0
     ? `${d.achados.altoImpactoFraco} desses achados de Alto impacto ${d.achados.altoImpactoFraco === 1 ? 'está sustentado' : 'estão sustentados'} só por relato único ou sem evidência — vale reforçar antes de levar à mesa de aprovação.`
     : `Nenhum achado de Alto impacto está sustentado apenas por relato único ou sem evidência neste recorte — a base de evidência aqui é sólida (caso concreto ou relato recorrente).`;
   document.getElementById('callout-achados').innerHTML =
     `${d.achados.dores} de ${d.achados.total} achados (${pct(d.achados.dores, d.achados.total)}) são Dores. Impacto Alto concentra ${d.achados.altoImpacto} achados (${pct(d.achados.altoImpacto, d.achados.total)}). ${fracoTxt}`;
 
-  // Cobertura
   const camada = d.contatos.porCamada;
   const gerencia = camada['Gerência'] || 0;
   const operacional = camada['Operacional'] || 0;
@@ -744,7 +1217,6 @@ function renderCallouts(d, produtoKey){
       ? `No Varejo, a cobertura é quase toda via Gerência — a voz de quem usa o sistema na ponta ainda está pouco representada nesse recorte.`
       : `Neste recorte a cobertura operacional é maior, o que aproxima a pesquisa de quem usa o sistema no dia a dia.`);
 
-  // Conversas
   const origem = d.pesquisas.porOrigem;
   const kickoff = origem['Kick-off'] || 0;
   document.getElementById('callout-conversas').innerHTML =
@@ -753,7 +1225,6 @@ function renderCallouts(d, produtoKey){
       ? `Ainda não há conversa motivada por decisão em aberto, buraco de cobertura, sinal quantitativo ou achado anterior sem resposta neste recorte.`
       : `As demais vieram de outras origens de pauta.`);
 
-  // Personas
   const statusP = d.personas.porStatus;
   const validada = statusP['Validada'] || 0;
   document.getElementById('callout-personas').innerHTML =
@@ -762,56 +1233,134 @@ function renderCallouts(d, produtoKey){
       : `Nenhuma das ${d.personas.total} personas deste recorte está Validada ainda — todas seguem em Rascunho ou Em construção. Persona aqui é hipótese de trabalho, não fonte de evidência; ela só amadurece quando alguém real do perfil se reconhece nela.`;
 }
 
-function renderVozes(produtoKey){
+/* ---------- Achados: gráficos que dependem do produto e do filtro ativo ---------- */
+function renderAchadosCharts(d){
+  renderDonut('chart-tipo', d.achados.porTipo, COLOR_TIPO, { total: d.achados.total, filterField: 'tipo' });
+  renderBars('chart-forca', d.achados.porForca, null, { total: d.achados.total, defs: DEFINITIONS.forca, filterField: 'forca' });
+  renderBars('chart-impacto', d.achados.porImpacto, COLOR_IMPACTO, { total: d.achados.total, defs: DEFINITIONS.impacto, filterField: 'impacto' });
+  renderBars('chart-status', d.achados.porStatus, null, { total: d.achados.total, defs: DEFINITIONS.status, filterField: 'status' });
+  renderMatrix('matrix', d.achados.matrizImpactoForca);
+}
+
+/* ---------- Vozes ---------- */
+function renderVozesToolbar(){
+  const bar = document.getElementById('vozes-toolbar');
+  bar.innerHTML = '';
+  const label = el('span','t-caption text-muted','Vitrine curada:');
+  bar.appendChild(label);
+  ['Dor','Oportunidade','Aprendizado','O que funciona'].forEach(tipo => {
+    const btn = el('button', 'filter-tag' + (vozesTipoQuick === tipo ? ' is-active' : ''), tipo);
+    btn.addEventListener('click', () => {
+      vozesTipoQuick = (vozesTipoQuick === tipo) ? null : tipo;
+      activeFilter = null;
+      vozesExpanded = false;
+      renderAchadosCharts(DATA[currentProduto]);
+      renderVozes();
+    });
+    bar.appendChild(btn);
+  });
+}
+
+function renderVozes(){
+  renderVozesToolbar();
+  const filterArea = document.getElementById('active-filter-area');
   const grid = document.getElementById('vozes-grid');
+  const verMaisWrap = document.getElementById('ver-mais-wrap');
+  filterArea.innerHTML = '';
   grid.innerHTML = '';
-  const list = produtoKey === 'todos'
-    ? DATA.vozes
-    : DATA.vozes.filter(v => v.produtos.includes(produtoKey));
-  if(list.length === 0){
-    grid.appendChild(el('div', 'empty-note', 'Sem citações registradas para este recorte.'));
+  verMaisWrap.innerHTML = '';
+
+  if(activeFilter){
+    const chip = el('div','active-filter-chip');
+    chip.appendChild(el('span','', 'Filtro: ' + activeFilter.label));
+    const closeBtn = el('button','','✕');
+    closeBtn.addEventListener('click', () => { activeFilter = null; vozesExpanded = false; renderAchadosCharts(DATA[currentProduto]); renderVozes(); });
+    chip.appendChild(closeBtn);
+    filterArea.appendChild(chip);
+
+    let matches = DATA.achadosIndex.filter(a => achadoMatchesProduto(a, currentProduto) && achadoMatchesFilter(a, activeFilter));
+    matches.sort((a,b) => (b.citacao ? 1 : 0) - (a.citacao ? 1 : 0));
+    if(matches.length === 0){
+      grid.appendChild(el('div','empty-note','Nenhum achado deste recorte se encaixa neste filtro.'));
+      return;
+    }
+    const cap = vozesExpanded ? matches.length : Math.min(9, matches.length);
+    matches.slice(0, cap).forEach(a => grid.appendChild(buildAchadoCard(a)));
+    if(matches.length > cap){
+      const btn = el('button','ver-mais-btn', `Ver mais (${matches.length - cap})`);
+      btn.addEventListener('click', () => { vozesExpanded = true; renderVozes(); });
+      verMaisWrap.appendChild(btn);
+    }
     return;
   }
-  const produtoLabel = { pneustore: 'PneuStore', atacado: 'VS Atacado', varejo: 'VS Varejo' };
-  list.forEach(v => {
-    const card = el('div', 'card voz-card');
-    const tags = el('div', 'voz-tags');
-    v.produtos.forEach(p => {
-      const t = el('span', 'badge ' + TONE_BADGE[PRODUTO_TONE[p]], produtoLabel[p]);
-      tags.appendChild(t);
-    });
-    const tipoTag = el('span', 'badge ' + TONE_BADGE[TIPO_TONE[v.tipo] || 'neutral'], v.tipo);
-    tags.appendChild(tipoTag);
-    card.appendChild(tags);
-    card.appendChild(el('div', 'voz-titulo', v.titulo));
-    card.appendChild(el('div', 'voz-quote', v.citacao));
-    card.appendChild(el('div', 'voz-perfil', v.perfil));
-    grid.appendChild(card);
+
+  // Vitrine curada (sem drill-down ativo)
+  let curated = DATA.vozesMeta
+    .map(v => ({ meta: v, a: getAchado(v.id) }))
+    .filter(x => x.a && achadoMatchesProduto(x.a, currentProduto));
+  if(vozesTipoQuick){
+    curated = curated.filter(x => x.a.tipo === vozesTipoQuick);
+  }
+  if(curated.length === 0){
+    grid.appendChild(el('div','empty-note','Sem citações registradas para este recorte.'));
+    return;
+  }
+  const cap = vozesExpanded ? curated.length : Math.min(6, curated.length);
+  curated.slice(0, cap).forEach(x => grid.appendChild(buildAchadoCard(x.a, x.meta.titulo)));
+  if(curated.length > cap){
+    const btn = el('button','ver-mais-btn', `Ver mais (${curated.length - cap})`);
+    btn.addEventListener('click', () => { vozesExpanded = true; renderVozes(); });
+    verMaisWrap.appendChild(btn);
+  }
+}
+
+function buildAchadoCard(a, tituloOverride){
+  const card = el('div', 'card voz-card');
+  const tags = el('div', 'voz-tags');
+  a.produtos.forEach(p => {
+    const t = el('span', 'badge ' + TONE_BADGE[PRODUTO_TONE[p]], PRODUTO_LABEL[p]);
+    tags.appendChild(t);
   });
+  const tipoTag = el('span', 'badge ' + TONE_BADGE[TIPO_TONE[a.tipo] || 'neutral'], a.tipo);
+  tags.appendChild(tipoTag);
+  card.appendChild(tags);
+  card.appendChild(el('div', 'voz-titulo', tituloOverride || a.achado));
+  if(a.citacao){
+    card.appendChild(el('div', 'voz-quote', a.citacao));
+  } else {
+    card.appendChild(el('div', 'voz-quote no-quote', 'Sem citação literal registrada para este achado.'));
+  }
+  card.appendChild(el('div', 'voz-perfil', a.perfil));
+  return card;
+}
+
+/* ---------- Render geral ---------- */
+function fadeSwap(ids, fn){
+  const nodes = ids.map(id => document.getElementById(id)).filter(Boolean);
+  nodes.forEach(n => n.classList.add('fading'));
+  setTimeout(() => {
+    fn();
+    nodes.forEach(n => n.classList.remove('fading'));
+  }, 120);
 }
 
 function renderAll(){
   const d = DATA[currentProduto];
   document.getElementById('updated-label').textContent = 'Atualizado em ' + new Date(DATA.updated + 'T12:00:00').toLocaleDateString('pt-BR', { day:'2-digit', month:'long', year:'numeric' });
 
-  renderKPIs(d);
-
-  renderBars('chart-tipo', d.achados.porTipo, COLOR_TIPO);
-  renderBars('chart-forca', d.achados.porForca, null);
-  renderBars('chart-impacto', d.achados.porImpacto, COLOR_IMPACTO);
-  renderBars('chart-status', d.achados.porStatus, null);
-
-  renderBars('chart-camada', d.contatos.porCamada, null);
-  renderBars('chart-usuarios', { 'Usuários': d.contatos.usuarios, 'Demais papéis': d.contatos.total - d.contatos.usuarios }, { 'Usuários': 'var(--success-700)', 'Demais papéis': 'var(--muted-foreground)' });
-
-  renderBars('chart-andamento', d.pesquisas.porAndamento, null);
-  renderBars('chart-origem', d.pesquisas.porOrigem, null);
-  renderBars('chart-modalidade', d.pesquisas.porModalidade, null);
-
-  renderBars('chart-personas', d.personas.porStatus, null);
-
-  renderCallouts(d, currentProduto);
-  renderVozes(currentProduto);
+  fadeSwap(['kpi-grid','achados-cards','cobertura-cards','conversas-cards','personas-cards'], () => {
+    renderKPIs(d);
+    renderAchadosCharts(d);
+    renderDonut('chart-camada', d.contatos.porCamada, null, { total: d.contatos.total, defs: DEFINITIONS.camada });
+    renderBars('chart-papel', d.contatos.papelPesquisa, null, { total: d.contatos.total, defs: DEFINITIONS.papel });
+    renderBars('chart-andamento', d.pesquisas.porAndamento, null, { total: d.pesquisas.total });
+    renderBars('chart-origem', d.pesquisas.porOrigem, null, { total: d.pesquisas.total });
+    renderBars('chart-modalidade', d.pesquisas.porModalidade, null, { total: d.pesquisas.total });
+    renderBars('chart-personas', d.personas.porStatus, null, { total: d.personas.total });
+    renderCallouts(d, currentProduto);
+  });
+  renderCoverageCompare();
+  renderVozes();
 }
 
 function buildSegmented(){
@@ -821,6 +1370,9 @@ function buildSegmented(){
     const btn = el('button', key === currentProduto ? 'active' : '', DATA[key].label);
     btn.addEventListener('click', () => {
       currentProduto = key;
+      activeFilter = null;
+      vozesExpanded = false;
+      vozesTipoQuick = null;
       Array.from(seg.children).forEach(c => c.classList.remove('active'));
       btn.classList.add('active');
       renderAll();
